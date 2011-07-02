@@ -25,7 +25,7 @@ public class Items {
         try {
             mappedItems = ItemsFile.returnMap();
         } catch (Exception ex) {
-            DynamicMarket.log.info(Messaging.bracketize(new StringBuilder().append(DynamicMarket.name).append(" Flatfile").toString()) + " could not grab item list!");
+            DynamicMarket.log.info("[" + DynamicMarket.name + "] Could not grab item list!");
         }
 
         Iterator<String> i$;

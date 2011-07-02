@@ -22,7 +22,17 @@ TODO:
     - Auto-transactions triggered by market condition/timer.
         - External plugin?
     - Migrate usage of MarketItem.parseTags to DatabaseMarket.parseTags.
-    
+    - Change configuration to YAML.
+    - Create YAML file to customize messages.
+
+0.5.0:
+    - Added Register API for economy support.
+        - Supports iConomy 5, iConomy 4, BOSEconomy, and Essentials Economy.
+    - Added support for decimals in prices.
+    - Defaults to OP if Permissions isn't found or if simple-permissions is set to true in config.
+        - Regular users get access to permission nodes dynamicmarket.access, dynamicmarket.buy, and dynamicmarket.sell.
+        - OPs have access to all commands.
+
 0.4.8:
     - shopLabel moved from a table name suffix to a table field.
     - Redundant shopLabel parameters removed when the shopLabel could be extracted from a MarketItem object.

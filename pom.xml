@@ -5,12 +5,6 @@
 	<artifactId>DynamicMarket</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>DynamicMarket</name>
-	<repositories>
-		<repository>
-			<id>nexisonline-repo</id>
-			<url>http://ci.nexisonline.net:8080/nexus/content/groups/public/</url>
-		</repository>
-	</repositories>
 	<dependencies>
 		<dependency>
 			<groupId>org.bukkit</groupId>
@@ -20,12 +14,27 @@
 		<dependency>
 			<groupId>com.nijikokun.bukkit</groupId>
 			<artifactId>Permissions</artifactId>
-			<version>2.7.3</version>
+			<version>3.1.7</version>
 		</dependency>
 		<dependency>
-			<groupId>com.nijikokun.bukkit</groupId>
+			<groupId>cosine.boseconomy</groupId>
+			<artifactId>BOSEconomy</artifactId>
+			<version>0.6.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.earth2me.essentials</groupId>
+			<artifactId>Essentials</artifactId>
+			<version>2.3.7</version>
+		</dependency>
+		<dependency>
+			<groupId>com.nijiko.coelho.iConomy</groupId>
 			<artifactId>iConomy</artifactId>
-			<version>5.0</version>
+			<version>4.6.5</version>
+		</dependency>
+		<dependency>
+			<groupId>com.iConomy</groupId>
+			<artifactId>iConomy</artifactId>
+			<version>5.0.1</version>
 		</dependency>
 	</dependencies>
 	<build>

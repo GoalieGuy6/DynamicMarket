@@ -266,6 +266,16 @@ public class SQLHandler {
             return 0;
         }
     }
+    
+    public double getDouble(String fieldName) {
+    	try {
+    		return rs.getDouble(fieldName);
+    	} catch (SQLException ex) {
+    		connDB.logSevereException("getDouble '" + fieldName + "' with " + connDB.dbTypeString() + " Failed", ex);
+    		isOK = false;
+    		return 0;
+    	}
+    }
 
     public String getString(String fieldName) {
         try {

@@ -1,8 +1,9 @@
 package com.gmail.haloinverse.DynamicMarket;
 
 import com.nijikokun.bukkit.Permissions.Permissions;
-import com.iConomy.*;
 import com.nijiko.permissions.PermissionHandler;
+import com.nijikokun.registerDM.payment.Method;
+import com.nijikokun.registerDM.payment.Methods;
 
 import java.io.File;
 import java.util.LinkedList;
@@ -24,12 +25,13 @@ public class DynamicMarket extends JavaPlugin {
 
     public static String name; // = "SimpleMarket";
     public static String codename = "Shaniqua";
-    public static String version; // = "0.4a";
+    public static String version; // = "0.5";
 
     public iListen playerListener = new iListen(this);
 
     public static Server server = null;
-    public static iConomy economy = null;
+    public static Method economy = null;
+    public static Methods economyMethods = null;
     public static PermissionHandler Permissions = null;
     
     public static iProperty Settings;
@@ -38,9 +40,9 @@ public class DynamicMarket extends JavaPlugin {
     //protected static String currency;// = "Coin";
     protected static boolean econLoaded = false;
     
-    public static boolean debug = false;
+    public static boolean debug = true;
 
-//    protected static boolean wrapperMode = false;
+    //protected static boolean wrapperMode = false;
     protected static boolean wrapperPermissions = false;
     protected static LinkedList<JavaPlugin> wrappers = new LinkedList<JavaPlugin>();    
     
@@ -61,7 +63,6 @@ public class DynamicMarket extends JavaPlugin {
     protected static String csvFileName;
     protected static String csvFilePath;
 
-    protected EconType econType = EconType.NONE;
     protected Items items;
     protected String itemsPath = "";
     protected DatabaseMarket db = null;
@@ -76,8 +77,8 @@ public class DynamicMarket extends JavaPlugin {
 
 
     public void onDisable() {
-//        db.uninitialize();
-        log.info(Messaging.bracketize(name) + " version " + Messaging.bracketize(version) + " (" + codename + ") disabled");
+    	//db.uninitialize();
+        log.info("[" + name + "] Version " + version + " (" + codename + ") disabled.");
     }
 
     public File getDataFolder() {
@@ -100,60 +101,58 @@ public class DynamicMarket extends JavaPlugin {
         getDataFolder().mkdir();
 
         server = getServer();
-        
         name = desc.getName();
         version = desc.getVersion();
+        
+    	log.info("[" + name + "] Initializing Version " + version + ".");
         
         sqlite = "jdbc:sqlite:" + directory + File.separator + "shop.db";
 
 	  	PluginManager pm = getServer().getPluginManager();
-	  	if(pm.getPlugin("iConomy").isEnabled() && DynamicMarket.economy == null) {
-	  		Plugin iConomy = pm.getPlugin("iConomy");
-	  		//iConomyData();	
-	  		setiConomy((iConomy)iConomy);
-	  		iConomy = (iConomy)iConomy;
-	  	}
-	  	if(pm.getPlugin("Permissions").isEnabled() && DynamicMarket.Permissions == null) {
-	  		setupPermissions();
-    		System.out.println("[DynamicMarket] Successfully linked with Permissions.");	  		
-	  	}
+	  	
+	  	setupPermissions();
+	  	
 	  	pluginListener = new iPluginListener();
 	  	pm.registerEvent(Event.Type.PLUGIN_ENABLE, pluginListener, Priority.Monitor, this);
- 
 
         checkLibs();
         setup();
         
-        log.info(Messaging.bracketize(name) + " version " + Messaging.bracketize(version) + " (" + codename + ") enabled");
+        log.info("[" + name + "] Version " + version + " (" + codename + ") enabled.");
     }
 
     public static Server getTheServer() {
         return server;
     }
     
-    public static iConomy getiConomy() {
+    public static Method getEconomy() {
         return economy;
     }
 
-    public static boolean setiConomy(iConomy plugin) {
+    public static boolean setEconomy(Method plugin) {
         if (economy == null) {
             economy = plugin;
-            //currency = iConomy.getCurrency();
             econLoaded = true;
-            log.info(Messaging.bracketize(name) + " iConomy connected.");   
         } else {
             return false;
         }
         return true;
     }
 
-
     public static void setupPermissions() {
-    	Plugin test = getTheServer().getPluginManager().getPlugin("Permissions");
-        if (Permissions == null) 
-        	if ( test != null )
-        		DynamicMarket.Permissions = ((Permissions)test).getHandler();
+    	if (Permissions != null) {
+    		return;
+    	}
+    	
+    	Plugin permissionsPlugin = getTheServer().getPluginManager().getPlugin("Permissions");
+    	
+        if (permissionsPlugin == null) {
+        	log.info("[" + name + "] Permissions plugin not found, defaulting to OP.");
+        	return;
+        }
         
+        DynamicMarket.Permissions = ((Permissions) permissionsPlugin).getHandler();
+        log.info("[" + name + "] Linked with permissions successfully.");
     }
     
 	private void checkLibs() {
@@ -162,19 +161,19 @@ public class DynamicMarket extends JavaPlugin {
 		if(!a.exists()) {
 			isok =  FileDownloader.fileDownload("http://www.brisner.no/libs/sqlitejdbc-v056.jar", getDataFolder().toString());
 			if(isok) 
-				System.out.println("[DynamicMarket] Downloaded SQLite Successfully.");
+				log.info("[" + name + "] Downloaded SQLite connector successfully.");
 		}
 		File b = new File(getDataFolder() + "/mysql-connector-java-5.1.15-bin.jar");
 		if(!b.exists()) {
 			isok = FileDownloader.fileDownload("http://www.brisner.no/libs/mysql-connector-java-5.1.15-bin.jar", getDataFolder().toString());
-			if(isok) 
-			System.out.println("[DynamicMarket] Downloaded MySQL Successfully.");
+			if(isok)
+				log.info("[" + name + "] Downloaded MySQL connector successfully.");
 		}
 		File c = new File(getDataFolder() + "/items.db");
 		if(!c.exists()) {
 			isok = FileDownloader.fileDownload("http://www.brisner.no/DynamicMarket/items.db", getDataFolder().toString());
-			if(isok) 
-			System.out.println("[DynamicMarket] items.db downloaded successfully");
+			if(isok)
+				log.info("[" + name + "] Downloaded items.db successfully.");
 		}
 	}
 
@@ -190,7 +189,7 @@ public class DynamicMarket extends JavaPlugin {
     
     public void hookWrapper(JavaPlugin wrap) {
     	DynamicMarket.wrappers.add(wrap);
-    	log.info(Messaging.bracketize(name) + " wrapper mode enabled by " + wrap.getDescription().getName());    	
+    	log.info("[" + name + "] Wrapper mode enabled by " + wrap.getDescription().getName());    	
     }
 
     public boolean wrapperCommand(CommandSender sender, String cmd, String[] args, String shopLabel, String accountName, boolean freeAccount) {
@@ -226,10 +225,10 @@ public class DynamicMarket extends JavaPlugin {
         mysql_dbEngine = Settings.getString("mysql-dbengine", mysql_dbEngine);
 
         if (DynamicMarket.database_type.equalsIgnoreCase("mysql")) {
-            try { 
+            try {
                 Class.forName("com.mysql.jdbc.Driver");
             } catch(ClassNotFoundException ex) {
-                log.info("com.mysql.jdbc.Driver class not found!");
+                log.severe("[" + name + "] Could not find MySQL driver.");
                 ex.printStackTrace();
             }
             db = new DatabaseMarket(DatabaseMarket.Type.MYSQL, "Market", items, mysql_dbEngine, this);
@@ -237,7 +236,7 @@ public class DynamicMarket extends JavaPlugin {
             try {
                 Class.forName("org.sqlite.JDBC");
             } catch(ClassNotFoundException ex) {
-                log.info("org.sqlite.JDBC class not found!");
+                log.severe("[" + name + "] Could not find SQLite driver.");
                 ex.printStackTrace();
             }
             db = new DatabaseMarket(DatabaseMarket.Type.SQLITE, "Market", items, "", this);
@@ -245,15 +244,9 @@ public class DynamicMarket extends JavaPlugin {
 
         csvFileName = Settings.getString("csv-file", "shopDB.csv");
         csvFilePath = Settings.getString("csv-file-path", getDataFolder() + File.separator);
-//        wrapperMode = Settings.getBoolean("wrapper-mode", false);
+        //wrapperMode = Settings.getBoolean("wrapper-mode", false);
         simplePermissions = Settings.getBoolean("simple-permissions", false);
         wrapperPermissions = Settings.getBoolean("wrapper-permissions", false);
-
-        Messaging.colNormal = "&" + Settings.getString("text-colour-normal", "e");
-        Messaging.colCmd = "&" + Settings.getString("text-colour-command", "f");
-        Messaging.colBracket = "&" + Settings.getString("text-colour-bracket", "d");
-        Messaging.colParam = "&" + Settings.getString("text-colour-param", "b");
-        Messaging.colError = "&" + Settings.getString("text-colour-error", "c");
 
         defaultShopAccount = Settings.getString("default-shop-account", "");
         defaultShopAccountFree = Settings.getBoolean("default-shop-account-free", defaultShopAccountFree);
@@ -265,23 +258,5 @@ public class DynamicMarket extends JavaPlugin {
         } else {
             transLog = new TransactionLogger(this, null, false);
         }
-
-        String econTypeString = Settings.getString("economy-plugin", "iconomy4");
-        if (econTypeString.equalsIgnoreCase("iconomy4")) {
-            econType = EconType.ICONOMY4;
-        } else {
-            log.severe(Messaging.bracketize(name) + " Invalid economy setting for 'economy-plugin='.");
-            econType = EconType.NONE;
-        }
-    }
-
-    public void InitializeEconomy() {
-            econLoaded = true;
-        log.info(Messaging.bracketize(name) + " successfully hooked into iConomy.");
-    }
-
-    public static enum EconType {
-
-        NONE, ICONOMY4;
     }
 }

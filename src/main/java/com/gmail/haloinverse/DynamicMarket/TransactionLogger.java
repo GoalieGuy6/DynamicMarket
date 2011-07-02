@@ -61,6 +61,6 @@ public class TransactionLogger {
     }
 
     private void logSevereException(String exDesc, Exception exDetail) {
-        DynamicMarket.log.severe("[" + DynamicMarket.name + "]: " + exDesc + ": " + exDetail);
+        DynamicMarket.log.severe("[" + DynamicMarket.name + "] " + exDesc + ": " + exDetail);
     }
 }

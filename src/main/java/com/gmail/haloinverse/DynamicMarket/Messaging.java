@@ -7,12 +7,11 @@ public class Messaging {
 
     public Player player = null;
     private CommandSender sender = null;
-    public static String colNormal = "&e"; // Normal text colour {}
+    public static String colNormal = "&e"; //  text colour <yellow>
     public static String colCmd = "&f"; // Command highlight colour {CMD}
     public static String colBracket = "&d"; // Highlighting of brackets around params/data {PBK}
     public static String colParam = "&b"; // Highlighting of parameters.
     public static String colError = "&c"; // Highlighting for errors. {ERR}
-    /*     */
 
     public Messaging(CommandSender thisSender) {
         sender = thisSender;
@@ -57,10 +56,6 @@ public class Messaging {
 
     public static String colorize(String original) {
         return original.replace("<black>", "&0").replace("<navy>", "&1").replace("<green>", "&2").replace("<teal>", "&3").replace("<red>", "&4").replace("<purple>", "&5").replace("<gold>", "&6").replace("<silver>", "&7").replace("<gray>", "&8").replace("<blue>", "&9").replace("<lime>", "&a").replace("<aqua>", "&b").replace("<rose>", "&c").replace("<pink>", "&d").replace("<yellow>", "&e").replace("<white>", "&f");
-    }
-
-    public static String bracketize(String message) {
-        return "[" + message + "]";
     }
 
     public void send(String message) {

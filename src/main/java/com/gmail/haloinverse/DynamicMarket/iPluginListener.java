@@ -1,11 +1,12 @@
 package com.gmail.haloinverse.DynamicMarket;
 
-import com.iConomy.iConomy;
+import com.nijikokun.registerDM.payment.Methods;
 
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.event.server.ServerListener;
-import org.bukkit.plugin.Plugin;
+
+import java.util.logging.Logger;
 
 /**
  * iPluginListener
@@ -19,37 +20,37 @@ import org.bukkit.plugin.Plugin;
  * @author Nijikokun
  */
 public class iPluginListener extends ServerListener {
-	public iPluginListener() { }
+	
+	private static final Logger log = Logger.getLogger("Minecraft");
+	private Methods Methods = null;
+	
+	
+	public iPluginListener() {
+		this.Methods = new Methods();
+	}
 	@Override
 	public void onPluginDisable(PluginDisableEvent event) {
 		if (DynamicMarket.economy != null) {
-			if (event.getPlugin().getDescription().getName().equals("iConomy")) {
-				DynamicMarket.setiConomy(null);
-				System.out.println("[DynamicMarket] un-hooked from iConomy.");
+			boolean check = false;
+			
+			if (this.Methods != null && this.Methods.hasMethod()) {
+				check = this.Methods.checkDisabled(event.getPlugin());
+			}
+			
+			if (check) {
+				DynamicMarket.setEconomy(null);
+				DynamicMarket.econLoaded = false;
+				log.info("[" + DynamicMarket.name + "] Economy unlinked.");
 			}
 		}
 	}
 
 	@Override
 	public void onPluginEnable(PluginEnableEvent event) {
-		Plugin iConomy = event.getPlugin().getServer().getPluginManager().getPlugin("iConomy");
-
-		if (iConomy != null) {
-			if (iConomy.isEnabled() && iConomy.getClass().getName().equals("com.iConomy.iConomy")) {
-				if (iConomy != null) {
-					DynamicMarket.setiConomy((iConomy)iConomy);
-				}
-				System.out.println("[DynamicMarket] hooked into iConomy.");
-			}
-		}
-
-		if(event.getPlugin().getDescription().getName().equals("Permissions")) {
-			if( DynamicMarket.Permissions == null) {
-				Plugin Permissions = DynamicMarket.getTheServer().getPluginManager().getPlugin("Permissions");
-				if(Permissions != null) {
-					DynamicMarket.setupPermissions();
-					System.out.println("[DynamicMarket] Successfully linked with Permissions.");
-				}
+		if (!this.Methods.hasMethod()) {
+			if (this.Methods.setMethod(event.getPlugin())) {
+				DynamicMarket.setEconomy(this.Methods.getMethod());
+				log.info("[" + DynamicMarket.name + "] Linked with " + DynamicMarket.getEconomy().getName() + " Version " + DynamicMarket.getEconomy().getVersion() + " successfully.");
 			}
 		}
 	}

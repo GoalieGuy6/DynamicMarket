@@ -1,7 +1,7 @@
 package com.gmail.haloinverse.DynamicMarket;
 
-import com.iConomy.iConomy;
 import java.lang.Math;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 //import java.sql.ResultSet;
@@ -9,13 +9,13 @@ import java.util.ArrayList;
 public class MarketItem extends ItemClump {
 
     private String name;                // n | name // name used for item
-    public int basePrice;               // bp       // base purchase price of item
+    public double basePrice;               // bp       // base purchase price of item
     public int stock;                   // s        // current stock level of item
     public boolean canBuy;              // cb       // true if can be purchased, false if not
     public boolean canSell;             // cs       // true if can be sold, false if not
     private int volatility;             // v	    // % change in price per 1 stock bought/sold, * intScale
                                         // iv	    // inverse volatility; units bought/sold per doubling/halving of price
-    public int salesTax;   		// st	    // basePrice * (1 - (salesTax/100)) = selling price
+    public double salesTax;   		// st	    // basePrice * (1 - (salesTax/100)) = selling price
     public int stockLowest;		// sl	    // minimum stock at which purchases will fail (hard limit)
     public int stockHighest;            // sh	    // maximum stock at which sales will fail (hard limit)
     public int stockFloor;              // sf       // minimum stock level possible (soft limit)
@@ -95,7 +95,7 @@ public class MarketItem extends ItemClump {
 
         // Load defaults, if available.
         if (defaults != null) {
-            this.basePrice = Math.round((float) defaults.basePrice * this.count / defaults.count);
+            this.basePrice = round((float) defaults.basePrice * this.count / defaults.count, 2);
             this.stock = Math.round(((float) defaults.stock * defaults.count / this.count) - 0.5f);
             this.canBuy = defaults.canBuy;
             this.canSell = defaults.canSell;
@@ -124,6 +124,7 @@ public class MarketItem extends ItemClump {
         // Element [0] is ignored.
         String curTag;
         Integer curVal;
+        Double curValDouble;
         String stringVal;
         String[] curParams;
         boolean setUntaggedBase = false;
@@ -138,22 +139,28 @@ public class MarketItem extends ItemClump {
                     curTag = curParams[0];
                     try {
                         curVal = Integer.parseInt(curParams[1]);
+                        curValDouble = Double.parseDouble(curParams[1]);
                     } catch (NumberFormatException ex) {
                         if (curParams[1].equalsIgnoreCase("+INF")) {
                             curVal = Integer.MAX_VALUE;
+                            curValDouble = Double.MAX_VALUE;
                         } else if (curParams[1].equalsIgnoreCase("-INF")) {
                             curVal = Integer.MIN_VALUE;
+                            curValDouble = Double.MIN_VALUE;
                         } else {
                             curVal = null;
+                            curValDouble = null;
                             stringVal = curParams[1];
                         }
                     }
                 } else {
                     try { // Try to parse it as a plain integer.
                         curTag = null;
-                        curVal = Integer.parseInt(initData[i]);
+                        curValDouble = Double.parseDouble(initData[i]);
+                        curVal = curValDouble.intValue();
                     } catch (NumberFormatException ex) {	// Didn't work? Just use it as a string.
                         curVal = null;
+                        curValDouble = null;
                         curTag = initData[i];
                     }
                 }
@@ -161,8 +168,8 @@ public class MarketItem extends ItemClump {
                 // If first param is an untagged value, make it the basePrice.
                 if (i == 1) {
                     if (curTag == null) {
-                        if (curVal != -1) {
-                            this.basePrice = curVal;
+                        if (curValDouble != -1) {
+                            this.basePrice = curValDouble;
                             // maskData.basePrice = 1;
                         } else {
                             // Base price set to -1. Disable buying.
@@ -182,7 +189,7 @@ public class MarketItem extends ItemClump {
                             // if salePrice = basePrice * (1 - (salesTax / 100))
                             // then (1 - (salePrice / basePrice)) * 100 = salesTax
                             if (this.basePrice != 0) {
-                                this.salesTax = Math.round((1 - ((float) curVal / basePrice)) * 100);
+                                this.salesTax = round((1 - ((float) curVal / basePrice)) * 100, 2);
                                 // maskData.salesTax = 1;
                             } else {
                                 this.basePrice = curVal;
@@ -381,7 +388,7 @@ public class MarketItem extends ItemClump {
         this.subType = myQuery.getInt("subtype");
         this.name = myQuery.getString("name");
         this.count = myQuery.getInt("count");
-        this.basePrice = myQuery.getInt("baseprice");
+        this.basePrice = myQuery.getDouble("baseprice");
         this.canBuy = (myQuery.getInt("canbuy") == 1);
         this.canSell = (myQuery.getInt("cansell") == 1);
         this.stock = myQuery.getInt("stock");
@@ -526,17 +533,17 @@ public class MarketItem extends ItemClump {
         // All range limits handled? Find the sum of terms of a finite geometric series.
         //return Math.round(this.basePrice * Math.pow(getVolFactor(),-lowStock) * (Math.pow(getVolFactor(),numTerms) - 1) / (getVolFactor()-1));
         // return math.round(firstTerm * (1 - (ratio ^ terms)) / (1 - ratio));
-        return Math.round(lowStockPrice * (1 - (Math.pow(1 / getVolFactor(), numTerms))) / (1 - (1 / getVolFactor())));
+        return round(lowStockPrice * (1 - (Math.pow(1 / getVolFactor(), numTerms))) / (1 - (1 / getVolFactor())), 3);
     }
 
-    public int getBuyPrice(int numBundles) {
+    public double getBuyPrice(int numBundles) {
         // Return the purchase price of the given number of bundles.
-        return (int) Math.round(Math.ceil(getBatchPrice(stock, stock - numBundles + 1)));
+        return (double) round(getBatchPrice(stock, stock - numBundles + 1), 2);
     }
 
-    public int getSellPrice(int numBundles) {
+    public double getSellPrice(int numBundles) {
         // Return the selling price of the given number of bundles.
-        return (int) Math.round(Math.floor(deductTax(getBatchPrice(stock, stock + numBundles - 1))));
+        return (double) round(deductTax(getBatchPrice(stock, stock + numBundles - 1)), 2);
     }
 
     private double deductTax(double basePrice) {
@@ -595,9 +602,9 @@ public class MarketItem extends ItemClump {
         if (volatility == 0) {
             // If price doesn't change, the stock level is effectively +/-INF.
             if (targPrice > basePrice)
-                return Integer.MIN_VALUE;
+                return Double.MIN_VALUE;
             if (targPrice < basePrice)
-                return Integer.MAX_VALUE;
+                return Double.MAX_VALUE;
             // targPrice == basePrice
             return stock;
         }
@@ -623,7 +630,7 @@ public class MarketItem extends ItemClump {
             return ("{PRM}" + getName() + "{ERR} has only {PRM}"
                     + formatBundleCount(leftToBuy()) + " {ERR}left for sale.");
         // Display count as [<bundle>(x<numbundles>)]
-        return ("{}Buy: {BKT}[{PRM}" + formatBundleCount(numBundles) + "{BKT}]{} for {PRM}" + iConomy.format(getBuyPrice(numBundles)));
+        return ("{}Buy: {BKT}[{PRM}" + formatBundleCount(numBundles) + "{BKT}]{} for {PRM}" + DynamicMarket.getEconomy().format(getBuyPrice(numBundles)));
         // TODO: Abstract currency name from iConomy reference.
     }
 
@@ -639,7 +646,7 @@ public class MarketItem extends ItemClump {
                     + formatBundleCount(leftToSell()) + " {ERR}can be sold.");
         // Display count as [<bundle>(x<numbundles>)]
         return ("{}Sell: {BKT}[{PRM}" + formatBundleCount(numBundles)
-                + "{BKT}]{} for {PRM}" + iConomy.format(getSellPrice(numBundles)));
+                + "{BKT}]{} for {PRM}" + DynamicMarket.getEconomy().format(getSellPrice(numBundles)));
         // TODO: Abstract currency name from iConomy reference.
     }
 
@@ -737,6 +744,17 @@ public class MarketItem extends ItemClump {
         if (thisInt == Integer.MIN_VALUE)
             return "-INF";
         return Integer.toString(thisInt);
+    }
+    
+    public double round(double number, int precision) {
+    	BigDecimal bd = new BigDecimal(number);
+    	BigDecimal rounded;
+    	try {
+    		rounded = bd.setScale(precision);
+    	} catch (ArithmeticException ex) {
+    		rounded = bd;
+    	}
+    	return rounded.doubleValue();
     }
 
     public String csvLine() {

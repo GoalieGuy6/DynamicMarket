@@ -1,5 +1,5 @@
 items-db-path=
-    Path to the items.db file SimpleMarket will use to get initial item names. Default: "/Plugins/SimpleMarket/"
+    Path to the items.db file DynamicMarket will use to get initial item names. Default: "/plugins/DynamicMarket/"
 shop-tag=
     Default prefix for messages from the Shop plugin. (Not always used... will become more universal.)
 max-items-per-purchase=
@@ -16,14 +16,8 @@ csv-file-path=
     The path to the .csv file.
 simple-permissions=
     If set to "true", then the Permissions plugin will not be used. Instead, DynamicMarket will assume that any commands
-coming from a logged-in player have "normal user" access ("list", "buy", "sell", "help", etc.), and any commands coming from the Bukkit console
+coming from a non-OP "normal user" access ("list", "buy", "sell", "help", etc.), and any commands coming from the Bukkit console or an OP'ed player
 have "admin" access ("add", "update", "exportDB", etc.).
-text-colour-normal=
-text-colour-command=
-text-colour-bracket=
-text-colour-param=
-text-colour-error=
-    Sets the colour codes used for various text highlights. These are single-character strings in [0..9]|[a..f], without "&"s or other control characters.
 
 The following settings are only used if "database-type=mysql":
 mysql-db=
