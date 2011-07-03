@@ -43,6 +43,7 @@ public class DynamicMarket extends JavaPlugin {
     public static boolean debug = true;
 
     //protected static boolean wrapperMode = false;
+    protected static boolean opPermissions = false;
     protected static boolean wrapperPermissions = false;
     protected static LinkedList<JavaPlugin> wrappers = new LinkedList<JavaPlugin>();    
     
@@ -245,6 +246,7 @@ public class DynamicMarket extends JavaPlugin {
         csvFileName = Settings.getString("csv-file", "shopDB.csv");
         csvFilePath = Settings.getString("csv-file-path", getDataFolder() + File.separator);
         //wrapperMode = Settings.getBoolean("wrapper-mode", false);
+        opPermissions = Settings.getBoolean("op-permissions", false);
         simplePermissions = Settings.getBoolean("simple-permissions", false);
         wrapperPermissions = Settings.getBoolean("wrapper-permissions", false);
 
@@ -253,10 +255,32 @@ public class DynamicMarket extends JavaPlugin {
 
         transLogFile = Settings.getString("transaction-log-file", transLogFile);
         transLogAutoFlush = Settings.getBoolean("transaction-log-autoflush", transLogAutoFlush);
+        
         if ((transLogFile != null) && (!transLogFile.isEmpty())) {
             transLog = new TransactionLogger(this, getDataFolder() + File.separator + transLogFile, transLogAutoFlush);
         } else {
             transLog = new TransactionLogger(this, null, false);
         }
+        
+        if (!Settings.keyExists("version")) {
+        	boolean update = runUpdate();
+        	
+        	if (update)
+        		version = Settings.getString("version", version);
+        }
+        
+    }
+    
+    private boolean runUpdate() {
+    	// Updates the db to add decimal support
+    	boolean update = db.updateTable();
+    	
+    	if (update) {
+    		log.info("[" + name + "] Database updated successfully.");
+    		return true;
+    	} else {
+    		log.warning("[" + name + "] Could not update database!");
+    		return false;
+    	}
     }
 }

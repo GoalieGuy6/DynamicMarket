@@ -60,6 +60,52 @@ public class DatabaseMarket extends DatabaseCore {
             return false;
         }
     }
+    
+    public boolean updateTable() {
+    	SQLHandler myQuery = new SQLHandler(this);
+    	
+    	if (this.databaseType.equals(Type.SQLITE)) {
+    		myQuery.executeStatement("ALTER TABLE " + tableName + " RENAME TO " + tableName + "_backup;" +
+    				"CREATE TABLE " + tableName
+                    + " ( id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + "item INT NOT NULL, " 
+                    + "subtype INT NOT NULL, "
+                    + "name TEXT NOT NULL, " 
+                    + "count INT NOT NULL, "
+                    + "baseprice DECIMAL(64,2) NOT NULL, " 
+                    + "canbuy INT NOT NULL, "
+                    + "cansell INT NOT NULL, " 
+                    + "stock INT NOT NULL, "
+                    + "volatility INT NOT NULL, " 
+                    + "salestax INT NOT NULL, "
+                    + "stockhighest INT NOT NULL, "
+                    + "stocklowest INT NOT NULL, "
+                    + "stockfloor INT NOT NULL, " 
+                    + "stockceil INT NOT NULL, "
+                    + "pricefloor INT NOT NULL, " 
+                    + "priceceil INT NOT NULL, "
+                    + "jitterperc INT NOT NULL, " 
+                    + "driftout INT NOT NULL, "
+                    + "driftin INT NOT NULL, " 
+                    + "avgstock INT NOT NULL, "
+                    + "class INT NOT NULL, "
+                    + "shoplabel TEXT NOT NULL DEFAULT '');"
+                    + "CREATE INDEX itemIndex ON " + tableName + " (item);"
+                    + "CREATE INDEX subtypeIndex ON " + tableName + " (subtype);"
+                    + "CREATE INDEX nameIndex ON " + tableName + " (name);"
+                    + "CREATE INDEX shoplabelIndex ON " + tableName + " (shoplabel);"
+                    + "INSERT INTO " + tableName + " SELECT * FROM " + tableName + "_backup;"
+                    + "DROP TABLE " + tableName + "_backup;");
+    	} else {
+    		myQuery.executeStatement("ALTER TABLE " + tableName + " ALTER COLUMN baseprice DECIMAL(64,2) NOT NULL");
+    	}
+    	myQuery.close();
+    	
+    	if (!myQuery.isOK)
+    		return false;
+    	
+    	return true;
+    }
 
     protected boolean createTable() {
         SQLHandler myQuery = new SQLHandler(this);
@@ -88,11 +134,10 @@ public class DatabaseMarket extends DatabaseCore {
                     + "avgstock INT NOT NULL, "
                     + "class INT NOT NULL, "
                     + "shoplabel TEXT NOT NULL DEFAULT '');"
-                    + "CREATE INDEX itemIndex ON Market (item);"
-                    + "CREATE INDEX subtypeIndex ON Market (subtype);"
-                    + "CREATE INDEX nameIndex ON Market (name);"
-                    + "CREATE INDEX shoplabelIndex ON Market (shoplabel)");
-
+                    + "CREATE INDEX itemIndex ON " + tableName + " (item);"
+                    + "CREATE INDEX subtypeIndex ON " + tableName + " (subtype);"
+                    + "CREATE INDEX nameIndex ON " + tableName + " (name);"
+                    + "CREATE INDEX shoplabelIndex ON " + tableName + " (shoplabel)");
         } else {
             myQuery.executeStatement("CREATE TABLE "
                     + tableName
@@ -128,7 +173,6 @@ public class DatabaseMarket extends DatabaseCore {
             return false;
 
         // Add default record.
-
         return add(new MarketItem("-1,-1 n:Default", new MarketItem(), this, ""));
     }
 
@@ -279,7 +323,8 @@ public class DatabaseMarket extends DatabaseCore {
         return data(thisItem, "");
     }
 
-    public MarketItem data(ItemClump thisItem, String shopLabel) {
+    @SuppressWarnings("unused")
+	public MarketItem data(ItemClump thisItem, String shopLabel) {
         // CHANGED: Returns MarketItems now.
         SQLHandler myQuery = new SQLHandler(this);
         MarketItem fetchedData = null;

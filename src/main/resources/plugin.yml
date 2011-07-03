@@ -2,8 +2,9 @@ name: DynamicMarket
 main: com.gmail.haloinverse.DynamicMarket.DynamicMarket
 version: 0.5.0
 authors:
-    - HaloInverse
     - GoalieGuy6
+    - Magik
+    - HaloInverse
 description: >
              A shop plugin building towards an interesting and flexible market system.
 commands:

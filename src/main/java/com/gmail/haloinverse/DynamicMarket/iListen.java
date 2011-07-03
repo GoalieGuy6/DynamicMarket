@@ -8,7 +8,6 @@ import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.inventory.ItemStack;
 
-import com.nijikokun.registerDM.payment.Method;
 import com.nijikokun.registerDM.payment.Method.MethodAccount;
 
 public class iListen extends PlayerListener {
@@ -22,7 +21,7 @@ public class iListen extends PlayerListener {
 	public boolean hasPermission(CommandSender sender, String permString) {
 		if (DynamicMarket.simplePermissions || DynamicMarket.Permissions == null) {
 			if (sender instanceof Player) {
-				if (sender.isOp()) {
+				if (sender.isOp() && DynamicMarket.opPermissions) {
 					return true;
 				} else if (Misc.isAny(permString, new String[]{"access", "buy", "sell"})) {
 					return true;
@@ -643,6 +642,7 @@ public class iListen extends PlayerListener {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private boolean shopUpdateItem(String itemStringIn, Messaging message, String shopLabel) {
 		// Make a copy of itemStringIn, in case modification is needed.
 		String itemString = new String(itemStringIn);

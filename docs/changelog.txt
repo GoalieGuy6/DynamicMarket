@@ -29,6 +29,7 @@ TODO:
     - Added Register API for economy support.
         - Supports iConomy 5, iConomy 4, BOSEconomy, and Essentials Economy.
     - Added support for decimals in prices.
+        - Database will automatically update on first run.
     - Defaults to OP if Permissions isn't found or if simple-permissions is set to true in config.
         - Regular users get access to permission nodes dynamicmarket.access, dynamicmarket.buy, and dynamicmarket.sell.
         - OPs have access to all commands.
