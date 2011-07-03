@@ -25,6 +25,12 @@ TODO:
     - Change configuration to YAML.
     - Create YAML file to customize messages.
 
+0.5.1:
+    - Bug fixes
+        - Fixed some rounding errors
+    - Added inventory space check
+        - Checks to see if player has enough space in their inventory before buying items
+
 0.5.0:
     - Added Register API for economy support.
         - Supports iConomy 5, iConomy 4, BOSEconomy, and Essentials Economy.

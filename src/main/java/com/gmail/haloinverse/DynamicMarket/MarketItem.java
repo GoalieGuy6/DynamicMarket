@@ -1,7 +1,8 @@
 package com.gmail.haloinverse.DynamicMarket;
 
 import java.lang.Math;
-import java.math.BigDecimal;
+//import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 //import java.sql.ResultSet;
@@ -533,7 +534,7 @@ public class MarketItem extends ItemClump {
         // All range limits handled? Find the sum of terms of a finite geometric series.
         //return Math.round(this.basePrice * Math.pow(getVolFactor(),-lowStock) * (Math.pow(getVolFactor(),numTerms) - 1) / (getVolFactor()-1));
         // return math.round(firstTerm * (1 - (ratio ^ terms)) / (1 - ratio));
-        return round(lowStockPrice * (1 - (Math.pow(1 / getVolFactor(), numTerms))) / (1 - (1 / getVolFactor())), 3);
+        return round(lowStockPrice * (1 - (Math.pow(1 / getVolFactor(), numTerms))) / (1 - (1 / getVolFactor())), 2);
     }
 
     public double getBuyPrice(int numBundles) {
@@ -747,14 +748,12 @@ public class MarketItem extends ItemClump {
     }
     
     public double round(double number, int precision) {
-    	BigDecimal bd = new BigDecimal(number);
-    	BigDecimal rounded;
-    	try {
-    		rounded = bd.setScale(precision);
-    	} catch (ArithmeticException ex) {
-    		rounded = bd;
+    	String format = "#.";
+    	for (int i = 0; i < precision; i++) {
+    		format += "#";
     	}
-    	return rounded.doubleValue();
+    	DecimalFormat df = new DecimalFormat(format);
+    	return Double.valueOf(df.format(number));
     }
 
     public String csvLine() {

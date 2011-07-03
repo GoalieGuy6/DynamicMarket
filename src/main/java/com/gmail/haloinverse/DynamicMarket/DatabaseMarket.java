@@ -323,7 +323,6 @@ public class DatabaseMarket extends DatabaseCore {
         return data(thisItem, "");
     }
 
-    @SuppressWarnings("unused")
 	public MarketItem data(ItemClump thisItem, String shopLabel) {
         // CHANGED: Returns MarketItems now.
         SQLHandler myQuery = new SQLHandler(this);
