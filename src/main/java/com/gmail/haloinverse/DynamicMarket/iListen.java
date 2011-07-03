@@ -19,11 +19,14 @@ public class iListen extends PlayerListener {
 	}
 
 	public boolean hasPermission(CommandSender sender, String permString) {
+		if (sender.isOp() && DynamicMarket.opPermissions) {
+			return true;
+		} else if (!(sender instanceof Player)) {
+			return true;
+		}
 		if (DynamicMarket.simplePermissions || DynamicMarket.Permissions == null) {
 			if (sender instanceof Player) {
-				if (sender.isOp() && DynamicMarket.opPermissions) {
-					return true;
-				} else if (Misc.isAny(permString, new String[]{"access", "buy", "sell"})) {
+				if (Misc.isAny(permString, new String[]{"access", "buy", "sell"})) {
 					return true;
 				} else {
 					return false;
@@ -40,11 +43,7 @@ public class iListen extends PlayerListener {
 			return false;
 		}
 		// Permissions not overridden.
-		if (sender instanceof Player) {
-			return DynamicMarket.Permissions.has((Player) sender, DynamicMarket.name.toLowerCase() + "." + permString);
-		} else {
-			return true;
-		}
+		return DynamicMarket.Permissions.has((Player) sender, DynamicMarket.name.toLowerCase() + "." + permString);
 	}
 
 	private boolean showHelp(CommandSender sender, String topic) {

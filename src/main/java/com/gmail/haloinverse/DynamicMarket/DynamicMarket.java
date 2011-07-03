@@ -96,6 +96,18 @@ public class DynamicMarket extends JavaPlugin {
         return directory;
     }
     
+    public File getLibFolder() throws Exception {
+    	File libFolder = new File("lib");
+    	
+    	if (libFolder.exists() && !libFolder.isDirectory()) {
+    		throw new Exception("lib folder could not be created!");
+    	} else if (!libFolder.exists()) {
+    		libFolder.mkdir();
+    	}
+    	
+    	return libFolder;
+    }
+    
     @Override
     public void onEnable() {
         PluginDescriptionFile desc = getDescription();
@@ -158,15 +170,21 @@ public class DynamicMarket extends JavaPlugin {
     
 	private void checkLibs() {
 		boolean isok = false;
-		File a = new File(getDataFolder()+ "/sqlitejdbc-v056.jar");
+		File libFolder;
+		try {
+			libFolder = getLibFolder();
+		} catch (Exception ex) {
+			libFolder = getDataFolder();
+		} 
+		File a = new File(libFolder + "/sqlitejdbc-v056.jar");
 		if(!a.exists()) {
-			isok =  FileDownloader.fileDownload("http://www.brisner.no/libs/sqlitejdbc-v056.jar", getDataFolder().toString());
+			isok =  FileDownloader.fileDownload("http://www.brisner.no/libs/sqlitejdbc-v056.jar", libFolder.toString());
 			if(isok) 
 				log.info("[" + name + "] Downloaded SQLite connector successfully.");
 		}
-		File b = new File(getDataFolder() + "/mysql-connector-java-5.1.15-bin.jar");
+		File b = new File(libFolder + "/mysql-connector-java-5.1.15-bin.jar");
 		if(!b.exists()) {
-			isok = FileDownloader.fileDownload("http://www.brisner.no/libs/mysql-connector-java-5.1.15-bin.jar", getDataFolder().toString());
+			isok = FileDownloader.fileDownload("http://www.brisner.no/libs/mysql-connector-java-5.1.15-bin.jar", libFolder.toString());
 			if(isok)
 				log.info("[" + name + "] Downloaded MySQL connector successfully.");
 		}
