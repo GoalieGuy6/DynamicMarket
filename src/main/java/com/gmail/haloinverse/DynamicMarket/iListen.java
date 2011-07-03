@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
 import com.nijikokun.registerDM.payment.Method.MethodAccount;
 
@@ -469,11 +470,29 @@ public class iListen extends PlayerListener {
 	private boolean shopBuyItem(Player player, String itemString, String shopLabel, String accountName) {
 		// TODO: check aren's source - oddly different here
 
-		// TODO: Check for sufficient inventory space for received items.
 		ItemClump requested = new ItemClump(itemString, plugin.db, shopLabel);
 		Messaging message = new Messaging(player);
 		
 		MethodAccount account = get_account(player.getName());
+		
+		PlayerInventory inv = player.getInventory();
+		int available = 0;
+		int maxStack = new ItemStack(requested.itemId).getType().getMaxStackSize();
+		
+		for (int i = 0; i <= 35; ++i) {
+			ItemStack item = inv.getItem(i);
+			if (item.getAmount() <= 0) {
+				available += maxStack;
+			} else if (item.getTypeId() == requested.itemId && item.getAmount() < maxStack) {
+				int itemAmount = item.getAmount();
+				available += (maxStack - itemAmount);
+			}
+		}
+		
+		if (available < requested.count) {
+			message.send(plugin.shop_tag + "{ERR}You do not have enough inventory space!");
+			return true;
+		}
 
 		double transValue;
 
