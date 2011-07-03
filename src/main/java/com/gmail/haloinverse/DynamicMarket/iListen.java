@@ -906,7 +906,7 @@ public class iListen extends PlayerListener {
 			}
 
 			if (subCommand.equalsIgnoreCase("reload")) {
-				if (!(hasPermission(sender, "admin"))) {
+				if (!(hasPermission(sender, "admin.reload"))) {
 					message.send("{ERR}You do not have permission to reload the shop plugin.");
 					return true;
 				}
@@ -918,7 +918,7 @@ public class iListen extends PlayerListener {
 			}
 
 			if (subCommand.equalsIgnoreCase("reset")) {
-				if (!(hasPermission(sender, "admin"))) {
+				if (!(hasPermission(sender, "admin.reset"))) {
 					message.send("{ERR}You do not have permission to reset the shop DB.");
 					return true;
 				}
@@ -930,7 +930,7 @@ public class iListen extends PlayerListener {
 			}
 
 			if (subCommand.equalsIgnoreCase("exportDB")) {
-				if (!(hasPermission(sender, "admin"))) {
+				if (!(hasPermission(sender, "admin.db"))) {
 					message.send("{ERR}You do not have permission to export the shop DB.");
 					return true;
 				}
@@ -945,7 +945,7 @@ public class iListen extends PlayerListener {
 			}
 
 			if (subCommand.equalsIgnoreCase("importDB")) {
-				if (!(hasPermission(sender, "admin"))) {
+				if (!(hasPermission(sender, "admin.db"))) {
 					message.send("{ERR}You do not have permission to import the shop DB.");
 					return true;
 				}
