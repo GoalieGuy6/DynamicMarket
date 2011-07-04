@@ -91,7 +91,7 @@ public class MarketItem extends ItemClump {
 
         // If 0th tag (name) does not contain ":", use count from defaults.
         if (!initData[0].contains(":")) {
-            this.count = defaults.count;
+            this.count = 1;
         }
 
         // Load defaults, if available.
@@ -781,7 +781,7 @@ public class MarketItem extends ItemClump {
         if (intString.equalsIgnoreCase("+inf"))
             return Integer.MAX_VALUE;
         try {
-            return Integer.parseInt(intString);
+        	return Integer.parseInt(intString);
         } catch (NumberFormatException ex) {
             return 0;
         }
@@ -820,6 +820,14 @@ public class MarketItem extends ItemClump {
         if (inputParams.length < 21) {
             return;
         }
+        
+        if (!inputParams[4].isEmpty()) {
+        	try {
+        		basePrice = Double.parseDouble(inputParams[4]);
+        	} catch (NumberFormatException ex) {
+        		basePrice = 0;
+        	}
+        }
 
         if (!inputParams[0].isEmpty())
             itemId = quickParse(inputParams[0]);
@@ -829,8 +837,6 @@ public class MarketItem extends ItemClump {
             count = quickParse(inputParams[2]);
         if (!inputParams[3].isEmpty())
             name = inputParams[3];
-        if (!inputParams[4].isEmpty())
-            basePrice = quickParse(inputParams[4]);
         if (!inputParams[5].isEmpty())
             stock = quickParse(inputParams[5]);
         if (!inputParams[6].isEmpty())
