@@ -26,7 +26,7 @@ public class DynamicMarket extends JavaPlugin {
     public static String name; // = "SimpleMarket";
     public static String codename = "Shaniqua";
     public static String version; // = "0.5";
-
+    
     public iListen playerListener = new iListen(this);
 
     public static Server server = null;
@@ -41,6 +41,7 @@ public class DynamicMarket extends JavaPlugin {
     protected static boolean econLoaded = false;
     
     public static boolean debug = true;
+    public static boolean needUpdate;
 
     //protected static boolean wrapperMode = false;
     protected static boolean opPermissions = false;
@@ -242,6 +243,13 @@ public class DynamicMarket extends JavaPlugin {
         mysql_user = Settings.getString("mysql-user", mysql_user);
         mysql_pass = Settings.getString("mysql-pass", mysql_pass);
         mysql_dbEngine = Settings.getString("mysql-dbengine", mysql_dbEngine);
+        
+        needUpdate = false;
+        if (!Settings.keyExists("version")) {
+        	needUpdate = true;
+        	
+        	version = Settings.getString("version", version);
+        }
 
         if (DynamicMarket.database_type.equalsIgnoreCase("mysql")) {
             try {
@@ -279,14 +287,6 @@ public class DynamicMarket extends JavaPlugin {
         } else {
             transLog = new TransactionLogger(this, null, false);
         }
-        
-        if (!Settings.keyExists("version")) {
-        	boolean update = runUpdate();
-        	
-        	if (update)
-        		version = Settings.getString("version", version);
-        }
-        
     }
     
     private boolean runUpdate() {

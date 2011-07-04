@@ -37,6 +37,15 @@ public abstract class DatabaseCore {
                 DynamicMarket.log.severe("[" + DynamicMarket.name + "] Database creation *failed*.");
                 return false;
             }
+        } else if (DynamicMarket.needUpdate) {
+        	DynamicMarket.log.info("[" + DynamicMarket.name + "] Updating database.");
+        	if (updateTable()) {
+        		DynamicMarket.log.info("[" + DynamicMarket.name + "] Database updated.");
+        		return true;
+        	} else {
+        		DynamicMarket.log.severe("[" + DynamicMarket.name + "] Database update failed.");
+        		return false;
+        	}
         }
         return false;
     }
@@ -140,6 +149,8 @@ public abstract class DatabaseCore {
     }
 
     protected abstract boolean createTable(String tableSuffix);
+    
+    protected abstract boolean updateTable();
 
     protected boolean createTable() {
         return createTable("");
