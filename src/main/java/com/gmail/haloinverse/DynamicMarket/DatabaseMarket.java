@@ -97,7 +97,7 @@ public class DatabaseMarket extends DatabaseCore {
                     + "INSERT INTO " + tableName + " SELECT * FROM " + tableName + "_backup;"
                     + "DROP TABLE " + tableName + "_backup;");
     	} else {
-    		myQuery.executeStatement("ALTER TABLE " + tableName + " ALTER COLUMN baseprice DECIMAL(64,2) NOT NULL");
+    		myQuery.executeStatement("ALTER TABLE " + tableName + " CHANGE baseprice baseprice DECIMAL(64,2) NOT NULL");
     	}
     	myQuery.close();
     	
