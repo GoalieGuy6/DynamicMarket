@@ -6,6 +6,8 @@ import com.nijikokun.registerDM.payment.Method;
 import com.nijikokun.registerDM.payment.Methods;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.Timer;
 import java.util.logging.Logger;
@@ -18,14 +20,14 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.util.config.Configuration;
 import org.bukkit.Server;
 
 public class DynamicMarket extends JavaPlugin {
     public static final Logger log = Logger.getLogger("Minecraft");
 
-    public static String name; // = "SimpleMarket";
-    public static String codename = "Shaniqua";
-    public static String version; // = "0.5";
+    public static String name; // = "DynamicMarket";
+    public static String version; // = "0.5.2";
     
     public DynamicMarketAPI DMAPI = new DynamicMarketAPI(this);
     
@@ -36,7 +38,7 @@ public class DynamicMarket extends JavaPlugin {
     public static Methods economyMethods = null;
     public static PermissionHandler Permissions = null;
     
-    public static iProperty Settings;
+    public static Configuration Settings;
     public static File directory = null;
 
     //protected static String currency;// = "Coin";
@@ -72,31 +74,16 @@ public class DynamicMarket extends JavaPlugin {
     protected DatabaseMarket db = null;
 
     protected PermissionInterface permissionWrapper = null;
+    protected boolean logTransactions = false;
     protected TransactionLogger transLog = null;
     protected String transLogFile = "transactions.log";
     protected boolean transLogAutoFlush = true;
     private static iPluginListener pluginListener = null;
 
-
-
-
+    
     public void onDisable() {
     	//db.uninitialize();
-        log.info("[" + name + "] Version " + version + " (" + codename + ") disabled.");
-    }
-
-    public File getDataFolder() {
-    	if ( directory == null ) {
-    		String pluginDirString = "plugins" + File.separator + "DynamicMarket";
-		    if ( !super.getDataFolder().toString().equals(pluginDirString) ) {
-		    	log.warning("Jar is not named DynamicMarket.jar!  Beware of multiple DynamicMarket instances being loaded!");
-		    	directory = new File(pluginDirString);
-		    } else {
-		    	directory = super.getDataFolder();
-		    }
-    	}
-    	
-        return directory;
+        log.info("[" + name + "] Version " + version + " disabled.");
     }
     
     public File getLibFolder() throws Exception {
@@ -122,7 +109,7 @@ public class DynamicMarket extends JavaPlugin {
         
     	log.info("[" + name + "] Initializing Version " + version + ".");
         
-        sqlite = "jdbc:sqlite:" + directory + File.separator + "shop.db";
+        sqlite = "jdbc:sqlite:" + getDataFolder() + File.separator + "shop.db";
 
 	  	PluginManager pm = getServer().getPluginManager();
 	  	
@@ -134,7 +121,7 @@ public class DynamicMarket extends JavaPlugin {
         checkLibs();
         setup();
         
-        log.info("[" + name + "] Version " + version + " (" + codename + ") enabled.");
+        log.info("[" + name + "] Version " + version + " enabled.");
     }
 
     public static Server getTheServer() {
@@ -212,32 +199,24 @@ public class DynamicMarket extends JavaPlugin {
     }
 
     public void setup() {
-        Settings = new iProperty(getDataFolder() + File.separator + name + ".settings");
+    	updateSettings();
+        Settings = new Configuration(new File(getDataFolder() + File.separator + "config.yml"));
+        
+        debug = false;
 
-        debug = Settings.getBoolean("debug", false);
-
-        // ItemsFile = new iProperty("items.db");
-        itemsPath = Settings.getString("items-db-path", getDataFolder() + File.separator);
-        items = new Items(itemsPath + "items.db", this);
+        items = new Items(getDataFolder().getPath() + File.separator + "items.db", this);
 
         shop_tag = Settings.getString("shop-tag", shop_tag);
         max_per_purchase = Settings.getInt("max-items-per-purchase", 64);
         max_per_sale = Settings.getInt("max-items-per-sale", 64);
 
-        DynamicMarket.database_type = Settings.getString("database-type", "sqlite");
+        DynamicMarket.database_type = Settings.getString("database.type", "sqlite");
 
-        mysql = Settings.getString("mysql-db", mysql);
-        mysql_user = Settings.getString("mysql-user", mysql_user);
-        mysql_pass = Settings.getString("mysql-pass", mysql_pass);
-        mysql_dbEngine = Settings.getString("mysql-dbengine", mysql_dbEngine);
+        mysql = Settings.getString("database.mysql.database", mysql);
+        mysql_user = Settings.getString("database.mysql.user", mysql_user);
+        mysql_pass = Settings.getString("database.mysql.password", mysql_pass);
+        mysql_dbEngine = Settings.getString("database.mysql.engine", mysql_dbEngine);
         
-        needUpdate = false;
-        if (!Settings.keyExists("version")) {
-        	needUpdate = true;
-        	
-        	version = Settings.getString("version", version);
-        }
-
         if (DynamicMarket.database_type.equalsIgnoreCase("mysql")) {
             try {
                 Class.forName("com.mysql.jdbc.Driver");
@@ -256,23 +235,110 @@ public class DynamicMarket extends JavaPlugin {
             db = new DatabaseMarket(DatabaseMarket.Type.SQLITE, "Market", items, "", this);
         }
 
-        csvFileName = Settings.getString("csv-file", "shopDB.csv");
-        csvFilePath = Settings.getString("csv-file-path", getDataFolder() + File.separator);
-        //wrapperMode = Settings.getBoolean("wrapper-mode", false);
-        opPermissions = Settings.getBoolean("op-permissions", false);
-        simplePermissions = Settings.getBoolean("simple-permissions", false);
-        wrapperPermissions = Settings.getBoolean("wrapper-permissions", false);
+        csvFileName = Settings.getString("general.csv.file", "shopDB.csv");
+        csvFilePath = "plugins/" + name;
+        opPermissions = Settings.getBoolean("permissions.op-permissions", false);
+        simplePermissions = Settings.getBoolean("permissions.ignore-permissions", false);
 
-        defaultShopAccount = Settings.getString("default-shop-account", "");
-        defaultShopAccountFree = Settings.getBoolean("default-shop-account-free", defaultShopAccountFree);
+        defaultShopAccount = Settings.getString("general.shop-account.name", "");
+        defaultShopAccountFree = Settings.getBoolean("general.shop-account.free", defaultShopAccountFree);
 
-        transLogFile = Settings.getString("transaction-log-file", transLogFile);
-        transLogAutoFlush = Settings.getBoolean("transaction-log-autoflush", transLogAutoFlush);
+        logTransactions = Settings.getBoolean("general.transactions.log-transactions", false);
+        transLogFile = Settings.getString("general.transactions.log-file", transLogFile);
+        transLogAutoFlush = Settings.getBoolean("general.transaction.log-auto-flush", transLogAutoFlush);
         
-        if ((transLogFile != null) && (!transLogFile.isEmpty())) {
-            transLog = new TransactionLogger(this, getDataFolder() + File.separator + transLogFile, transLogAutoFlush);
-        } else {
-            transLog = new TransactionLogger(this, null, false);
+        if (logTransactions) {
+	        if ((transLogFile != null) && (!transLogFile.isEmpty())) {
+	            transLog = new TransactionLogger(this, getDataFolder() + File.separator + transLogFile, transLogAutoFlush);
+	        } else {
+	            transLog = new TransactionLogger(this, null, false);
+	        }
         }
+    }
+    
+    private void updateSettings() {
+    	String oldConfig = getDataFolder() + File.separator + name + ".settings";
+    	String newConfig = getDataFolder() + File.separator + "config.yml";
+    	
+    	File oldFile = new File(oldConfig);
+    	File newFile = new File(newConfig);
+    	
+    	if (newFile.exists()) {
+    		if (oldFile.exists()) {
+    			oldFile.delete();
+    		}
+    		return;
+    	}
+    	
+    	InputStream input = DynamicMarket.class.getResourceAsStream("/config.yml");    	
+    	FileOutputStream output = null;
+    	
+    	try {
+    		output = new FileOutputStream(newConfig);
+    		byte[] buffer = new byte[8192];
+    		int length = 0;
+    		
+    		while ((length = input.read(buffer)) > 0)
+    			output.write(buffer, 0, length);
+    		
+    		log.info("[" + name + "] Config file created.");
+    	} catch (Exception e) {
+    		log.warning("[" + name + "] Error creating config file.");
+    	} finally {
+    		try {
+    			if (input != null) {
+    				input.close();
+    			}
+    		} catch (Exception e) { }
+    		
+    		try {
+    			if (output != null) {
+    				output.close();
+    			}
+    		} catch (Exception e) { }
+    	}
+    	
+    	if (newFile.exists() && !oldFile.exists()) {
+    		return;
+    	}
+    	
+		iProperty settings = new iProperty(oldConfig);
+    	
+    	needUpdate = false;
+    	
+    	if (!settings.keyExists("version")) {
+        	needUpdate = true;
+        	
+        	version = settings.getString("version", version);
+        }
+    	
+    	Configuration config = new Configuration(newFile);
+    	
+    	config.load();
+    	
+    	config.setProperty("permissions.ignore-permissions", settings.getBoolean("simple-permissions", false));
+    	config.setProperty("permissions.op-permissions", settings.getBoolean("op-permissions", false));
+    	
+    	config.setProperty("database.type", settings.getString("database-type", "sqlite"));
+    	config.setProperty("database.sqlite.file", "shop.db");
+    	config.setProperty("database.mysql.user", settings.getString("mysql-user", mysql_user));
+    	config.setProperty("database.mysql.password", settings.getString("mysql-pass", mysql_pass));
+    	config.setProperty("database.mysql.database", settings.getString("mysql-db", mysql));
+    	config.setProperty("database.mysql.engine", settings.getString("mysql-dbengine", mysql_dbEngine));
+    	
+    	config.setProperty("general.csv.file", settings.getString("csv-file", "shopDB.csv"));
+    	config.setProperty("general.transactions.max-items-buy", settings.getInt("max-items-per-purchase", 64));
+    	config.setProperty("general.transactions.max-items-sell", settings.getInt("max-items-per-sale", 64));
+    	config.setProperty("general.transactions.log-transactions", false);
+    	config.setProperty("general.transactions.log-file", settings.getString("transaction-log-file", transLogFile));
+    	config.setProperty("general.transactions.log-auto-flush", settings.getBoolean("transaction-log-autoflush", transLogAutoFlush));
+    	config.setProperty("general.shop-account.free", defaultShopAccountFree);
+    	config.setProperty("general.shop-account.name", "");
+    	config.setProperty("general.shop-tag", settings.getString("shop-tag", shop_tag));
+    	
+    	config.save();
+    	
+    	settings = null;
+    	oldFile.delete();
     }
 }

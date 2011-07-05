@@ -55,7 +55,7 @@ public class iListen extends PlayerListener {
 			String commands = "";
 			String topics = "";
 			String shortcuts = "";
-			message.send("{}" + Misc.headerify("{CMD} " + DynamicMarket.name + " {BKT}({CMD}" + DynamicMarket.codename + "{BKT}){} "));
+			message.send("{}" + Misc.headerify("{CMD} " + DynamicMarket.name + " {} "));
 			message.send("{} {BKT}(){} Optional, {PRM}<>{} Parameter");
 			message.send("{CMD} /shop help {BKT}({PRM}<topic/command>{BKT}){} - Show help.");
 			message.send("{CMD} /shop {PRM}<id>{BKT}({CMD}:{PRM}<count>{BKT}){} - Show buy/sell info on an item.");
@@ -106,7 +106,7 @@ public class iListen extends PlayerListener {
 			message.send("{} Other help topics: {PRM}" + topics);
 			return true;
 		}
-		message.send("{}" + Misc.headerify("{} " + DynamicMarket.name + " {BKT}({}" + DynamicMarket.codename + "{BKT}){} : " + topic + "{} "));
+		message.send("{}" + Misc.headerify("{} " + DynamicMarket.name + " : " + topic + "{} "));
 		if (topic.equalsIgnoreCase("buy")) {
 			if (hasPermission(sender, "buy")) {
 				message.send("{CMD} /shop buy {PRM}<id>{BKT}({CMD}:{PRM}<count>{CMD})");
@@ -483,7 +483,7 @@ public class iListen extends PlayerListener {
 			ItemStack item = inv.getItem(i);
 			if (item.getAmount() <= 0) {
 				available += maxStack;
-			} else if (item.getTypeId() == requested.itemId && item.getAmount() < maxStack) {
+			} else if (item.getTypeId() == requested.itemId && item.getData().getData() == (byte) requested.subType && item.getAmount() < maxStack) {
 				int itemAmount = item.getAmount();
 				available += (maxStack - itemAmount);
 			}
@@ -547,9 +547,11 @@ public class iListen extends PlayerListener {
 		message.send(plugin.shop_tag + "Purchased {BKT}[{PRM}" + data.formatBundleCount(requested.count) + "{BKT}]{PRM} " + data.getName() + "{} for {PRM}" + DynamicMarket.getEconomy().format(transValue));
 		show_balance(player, message);
 
-		if (plugin.transLog.isOK) {
-			plugin.transLog.logTransaction(player.getName() + ", Buy, " + (-requested.count) + ", " + data.count + ", " + data.getName() + ", "
-					+ data.itemId + ", " + data.subType + ", " + transValue + ", " + (shopLabel == null ? "" : shopLabel) + ", " + (accountName == null ? "" : accountName));
+		if (plugin.logTransactions) {
+			if (plugin.transLog.isOK) {
+				plugin.transLog.logTransaction(player.getName() + ", Buy, " + (-requested.count) + ", " + data.count + ", " + data.getName() + ", "
+						+ data.itemId + ", " + data.subType + ", " + transValue + ", " + (shopLabel == null ? "" : shopLabel) + ", " + (accountName == null ? "" : accountName));
+			}
 		}
 
 		return true;
@@ -618,9 +620,11 @@ public class iListen extends PlayerListener {
 		message.send(plugin.shop_tag + "Sold {BKT}[{PRM}" + data.formatBundleCount(requested.count) + "{BKT}]{PRM} " + data.getName() + "{} for {PRM}" + DynamicMarket.getEconomy().format(transValue));
 		show_balance(player, message);
 
-		if (plugin.transLog.isOK) {
-			plugin.transLog.logTransaction(player.getName() + ", Sell, " + requested.count + ", " + data.count + ", " + data.getName() + ", "
-					+ data.itemId + ", " + data.subType + ", " + (-transValue) + ", " + (shopLabel == null ? "" : shopLabel) + ", " + (accountName == null ? "" : accountName));
+		if (plugin.logTransactions) {
+			if (plugin.transLog.isOK) {
+				plugin.transLog.logTransaction(player.getName() + ", Sell, " + requested.count + ", " + data.count + ", " + data.getName() + ", "
+						+ data.itemId + ", " + data.subType + ", " + (-transValue) + ", " + (shopLabel == null ? "" : shopLabel) + ", " + (accountName == null ? "" : accountName));
+			}
 		}
 
 		return true;

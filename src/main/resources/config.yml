@@ -1,0 +1,38 @@
+##
+# DynamicMarket V0.5.2
+##
+general:
+    # Shop tag is what is displayed before most shop output  Default is [Shop].  Improved coloring system coming soon
+    shop-tag: '{BKT}[{}Shop{BKT}]{} '
+    transactions:
+        # Whether or not shop transactions should be logged
+        log-transactions: false
+        # The file to log transactions in (located in plugins/DynamicMarket)
+        log-file: transactions.log
+        # If true the file will save after every transaction.  If false the file will save on server shutdown
+        log-auto-flush: true
+        # Maximum number of items (not bundles) a user is allowed to buy in one transaction
+        max-items-buy: 64
+        # Maximum number of items (not bundles) a user is allowed to sell in one transaction
+        max-items-sell: 64
+database:
+    # Database type, either sqlite or mysql
+    type: sqlite
+    sqlite:
+        # The file to store an sqlite database in (lcoated in plugins/DynamicMarket)
+        file: shop.db
+    mysql:
+        # URI for your mysql database
+        database: jdbc:mysql://localhost:3306/minecraft
+        # MySQL username
+        user: root
+        # MySQL password
+        password: pass
+        # MySQL database engine (recommended MyISAM)
+        engine: MyISAM
+permissions:
+    # If set to true DynamicMarket will ignore the permissions plugin
+    # Regular users get 'dynamicmarket.access', 'dynamicmarket.buy', and 'dynamicmarket.sell'
+    ignore-permissions: false
+    # Whether or not ops should get all permissions
+    op-permissions: false
