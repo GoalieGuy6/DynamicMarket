@@ -7,9 +7,9 @@ import com.nijikokun.registerDM.payment.Methods;
 
 import java.io.File;
 import java.util.LinkedList;
-import java.util.ListIterator;
 import java.util.Timer;
 import java.util.logging.Logger;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Event;
@@ -26,6 +26,8 @@ public class DynamicMarket extends JavaPlugin {
     public static String name; // = "SimpleMarket";
     public static String codename = "Shaniqua";
     public static String version; // = "0.5";
+    
+    public DynamicMarketAPI DMAPI = new DynamicMarketAPI(this);
     
     public iListen playerListener = new iListen(this);
 
@@ -199,29 +201,14 @@ public class DynamicMarket extends JavaPlugin {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-        ListIterator<JavaPlugin> itr = DynamicMarket.wrappers.listIterator();
-        while(itr.hasNext()) {
-            JavaPlugin wrap = itr.next();
-            if ( wrap.onCommand(sender, cmd, commandLabel, args) ) return true;
+        if (this.DMAPI.hasWrappers()) {
+        	return this.DMAPI.wrapCommand(sender, cmd, commandLabel, args);
         }
         return this.playerListener.parseCommand(sender, cmd.getName(), args, "", defaultShopAccount, defaultShopAccountFree);
     }
     
-    public void hookWrapper(JavaPlugin wrap) {
-    	DynamicMarket.wrappers.add(wrap);
-    	log.info("[" + name + "] Wrapper mode enabled by " + wrap.getDescription().getName());    	
-    }
-
-    public boolean wrapperCommand(CommandSender sender, String cmd, String[] args, String shopLabel, String accountName, boolean freeAccount) {
-        return this.playerListener.parseCommand(sender, cmd, args, (shopLabel == null ? "" : shopLabel), accountName, freeAccount);
-    }
-
-    public boolean wrapperCommand(CommandSender sender, String cmd, String[] args, String shopLabel) {
-        return wrapperCommand(sender, cmd, args, (shopLabel == null ? "" : shopLabel), defaultShopAccount, defaultShopAccountFree);
-    }
-
-    public boolean wrapperCommand(CommandSender sender, String cmd, String[] args) {
-        return wrapperCommand(sender, cmd, args, "");
+    public DynamicMarketAPI getAPI() {
+    	return this.DMAPI;
     }
 
     public void setup() {
@@ -287,18 +274,5 @@ public class DynamicMarket extends JavaPlugin {
         } else {
             transLog = new TransactionLogger(this, null, false);
         }
-    }
-    
-    private boolean runUpdate() {
-    	// Updates the db to add decimal support
-    	boolean update = db.updateTable();
-    	
-    	if (update) {
-    		log.info("[" + name + "] Database updated successfully.");
-    		return true;
-    	} else {
-    		log.warning("[" + name + "] Could not update database!");
-    		return false;
-    	}
     }
 }

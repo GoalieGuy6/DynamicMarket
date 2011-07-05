@@ -25,6 +25,11 @@ TODO:
     - Change configuration to YAML.
     - Create YAML file to customize messages.
 
+0.5.2:
+    - Bux fixes
+    - Rewrote the API
+        - DMWrapper fork being released soon
+
 0.5.1:
     - Bug fixes
         - Fixed some rounding errors

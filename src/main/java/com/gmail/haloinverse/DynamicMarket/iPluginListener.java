@@ -5,7 +5,9 @@ import com.nijikokun.registerDM.payment.Methods;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.event.server.ServerListener;
+import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.LinkedList;
 import java.util.logging.Logger;
 
 /**
@@ -21,13 +23,14 @@ import java.util.logging.Logger;
  */
 public class iPluginListener extends ServerListener {
 	
+	private DynamicMarket plugin;
 	private static final Logger log = Logger.getLogger("Minecraft");
 	private Methods Methods = null;
-	
 	
 	public iPluginListener() {
 		this.Methods = new Methods();
 	}
+	
 	@Override
 	public void onPluginDisable(PluginDisableEvent event) {
 		if (DynamicMarket.economy != null) {
