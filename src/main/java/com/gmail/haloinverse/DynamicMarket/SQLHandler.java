@@ -256,6 +256,24 @@ public class SQLHandler {
         }
         return bool;
     }
+    
+    public String getColumnType(String tableName, String columnName) {
+    	String columnType = "";
+    	if (conn != null) {
+    		try {
+    			DatabaseMetaData dbm = conn.getMetaData();
+    			rs = dbm.getColumns(null, null, tableName, columnName);
+    			while (rs.next()) {
+    				columnType = rs.getString("TYPE_NAME");
+    			}
+    		} catch (SQLException ex) {
+    			connDB.logSevereException("Column check on " + connDB.dbTypeString() + " failed", ex);
+    			isOK = false;
+    			return "";
+    		}
+    	}
+    	return columnType;
+    }
 
     public int getInt(String fieldName) {
         try {

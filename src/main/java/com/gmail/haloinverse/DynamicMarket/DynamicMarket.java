@@ -201,6 +201,7 @@ public class DynamicMarket extends JavaPlugin {
     public void setup() {
     	updateSettings();
         Settings = new Configuration(new File(getDataFolder() + File.separator + "config.yml"));
+        Settings.load();
         
         debug = false;
 

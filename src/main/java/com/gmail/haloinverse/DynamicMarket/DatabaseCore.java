@@ -37,7 +37,7 @@ public abstract class DatabaseCore {
                 DynamicMarket.log.severe("[" + DynamicMarket.name + "] Database creation *failed*.");
                 return false;
             }
-        } else if (DynamicMarket.needUpdate) {
+        } else if (DynamicMarket.needUpdate || getColumnType(tableSuffix, "baseprice").contains("INT")) {
         	DynamicMarket.log.info("[" + DynamicMarket.name + "] Updating database.");
         	if (updateTable()) {
         		DynamicMarket.log.info("[" + DynamicMarket.name + "] Database updated.");
@@ -142,6 +142,15 @@ public abstract class DatabaseCore {
         bool = myQuery.checkTable(tableName + tableSuffix);
         myQuery.close();
         return bool;
+    }
+    
+    protected String getColumnType(String tableSuffix, String columnName) {
+    	String type;
+    	SQLHandler myQuery = new SQLHandler(this);
+    	
+    	type = myQuery.getColumnType(tableName + tableSuffix, columnName);
+    	myQuery.close();
+    	return type;
     }
 
     protected boolean checkTable() {
