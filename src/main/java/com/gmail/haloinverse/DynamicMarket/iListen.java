@@ -367,7 +367,8 @@ public class iListen extends PlayerListener {
 			}
 		}
 		if (topic.equalsIgnoreCase("about")) {
-			message.send("{} " + DynamicMarket.name + " " + DynamicMarket.version + " written by HaloInverse.");
+			message.send("{} " + DynamicMarket.name + " " + DynamicMarket.version + " written by GoalieGuy6.");
+			message.send("{} Versions 0.4.8 and earlier written by HaloInverse.");
 			message.send("{} Original structure and portions of code are from SimpleShop 1.1 by Nijikokun.");
 			return true;
 		}
@@ -468,25 +469,6 @@ public class iListen extends PlayerListener {
 		Messaging message = new Messaging(player);
 		
 		MethodAccount account = get_account(player.getName());
-		
-		PlayerInventory inv = player.getInventory();
-		int available = 0;
-		int maxStack = new ItemStack(requested.itemId).getType().getMaxStackSize();
-		
-		for (int i = 0; i <= 35; ++i) {
-			ItemStack item = inv.getItem(i);
-			if (item.getAmount() <= 0) {
-				available += maxStack;
-			} else if (item.getTypeId() == requested.itemId && item.getData().getData() == (byte) requested.subType && item.getAmount() < maxStack) {
-				int itemAmount = item.getAmount();
-				available += (maxStack - itemAmount);
-			}
-		}
-		
-		if (available < requested.count) {
-			message.send(plugin.shop_tag + "{ERR}You do not have enough inventory space!");
-			return true;
-		}
 
 		double transValue;
 
@@ -500,6 +482,29 @@ public class iListen extends PlayerListener {
 
 		if ((data == null) || !data.isValid()) {
 			message.send(plugin.shop_tag + "{ERR}Unrecognized item name, or not in shop.");
+			return true;
+		}
+		
+		PlayerInventory inv = player.getInventory();
+		int available = 0;
+		int maxStack = new ItemStack(requested.itemId).getType().getMaxStackSize();
+				
+		for (int i = 0; i <= 35; ++i) {
+			ItemStack item = inv.getItem(i);
+			boolean dataValue = true;
+			if (item.getData() != null && (byte) requested.subType != item.getData().getData()) {
+				dataValue = false;
+			}
+			if (item.getAmount() <= 0) {
+				available += maxStack;
+			} else if (item.getTypeId() == requested.itemId && item.getAmount() < maxStack && dataValue) {
+				int itemAmount = item.getAmount();
+				available += (maxStack - itemAmount);
+			}
+		}
+		
+		if (available < requested.count) {
+			message.send(plugin.shop_tag + "{ERR}You do not have enough inventory space!");
 			return true;
 		}
 
