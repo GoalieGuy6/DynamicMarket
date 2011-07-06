@@ -505,7 +505,7 @@ public class iListen extends PlayerListener {
 			}
 		}
 		
-		if (available < requested.count) {
+		if (available < requested.count * data.count) {
 			message.send(plugin.shop_tag + plugin.messages.getMessage("error.inventory"));
 			return true;
 		}
