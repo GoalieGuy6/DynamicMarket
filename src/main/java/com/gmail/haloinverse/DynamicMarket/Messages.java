@@ -10,6 +10,10 @@ public class Messages {
 	
 	private DynamicMarket plugin;
 	private Configuration config;
+	
+	public Messages() {
+		load();
+	}
 
 	public Messages(DynamicMarket instance) {
 		this.plugin = instance;

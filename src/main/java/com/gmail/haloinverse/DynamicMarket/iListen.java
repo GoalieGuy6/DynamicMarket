@@ -511,7 +511,7 @@ public class iListen extends PlayerListener {
 		}
 
 		if (data.isDefault()) {
-			message.send(plugin.shop_tag + plugin.messages.getMessage("error.cannot-buy"));
+			message.send(plugin.shop_tag + plugin.messages.getMessage("error.cannot-buy").replace("+item+", data.getName()));
 			return true;
 		}
 
@@ -1029,7 +1029,7 @@ public class iListen extends PlayerListener {
 					return true;
 				}
 				if (pageSelect > numPages) {
-					String msg = plugin.messages.getMessage("list.page").replace("+pages+", Integer.toString(numPages));
+					String msg = plugin.messages.getMessage("list.page").replace("+page+", Integer.toString(pageSelect)).replace("+pages+", Integer.toString(numPages));
 					message.send(plugin.shop_tag + msg);
 					return true;
 				}

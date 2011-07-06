@@ -26,8 +26,8 @@ import org.bukkit.Server;
 public class DynamicMarket extends JavaPlugin {
     public static final Logger log = Logger.getLogger("Minecraft");
 
-    public static String name; // = "DynamicMarket";
-    public static String version; // = "0.5.4";
+    public static String name;
+    public static String version;
     
     public DynamicMarketAPI DMAPI = new DynamicMarketAPI(this);
     
@@ -39,19 +39,14 @@ public class DynamicMarket extends JavaPlugin {
     public static PermissionHandler Permissions = null;
     
     public static Configuration Settings;
-    public static File directory = null;
     public Messages messages;
 
-    //protected static String currency;// = "Coin";
     protected static boolean econLoaded = false;
     
-    public static boolean debug = true;
+    public static boolean debug = false;
     public static boolean needUpdate;
 
-    //protected static boolean wrapperMode = false;
     protected static boolean opPermissions = false;
-    protected static LinkedList<JavaPlugin> wrappers = new LinkedList<JavaPlugin>();    
-    
     protected static boolean simplePermissions = false;
 
     public String shop_tag = "{BKT}[{}Shop{BKT}]{} ";
@@ -65,7 +60,6 @@ public class DynamicMarket extends JavaPlugin {
     protected static String mysql_user = "root";
     protected static String mysql_pass = "pass";
     protected static String mysql_dbEngine = "MyISAM";
-    protected static Timer timer = null;
     protected static String csvFileName;
     protected static String csvFilePath;
 
@@ -73,16 +67,13 @@ public class DynamicMarket extends JavaPlugin {
     protected String itemsPath = "";
     protected DatabaseMarket db = null;
 
-    protected PermissionInterface permissionWrapper = null;
     protected boolean logTransactions = false;
     protected TransactionLogger transLog = null;
     protected String transLogFile = "transactions.log";
     protected boolean transLogAutoFlush = true;
     private static iPluginListener pluginListener = null;
-
     
     public void onDisable() {
-    	//db.uninitialize();
         log.info("[" + name + "] Version " + version + " disabled.");
     }
     
@@ -109,8 +100,6 @@ public class DynamicMarket extends JavaPlugin {
         
     	log.info("[" + name + "] Initializing Version " + version + ".");
         
-        sqlite = "jdbc:sqlite:" + getDataFolder() + File.separator + "shop.db";
-
 	  	PluginManager pm = getServer().getPluginManager();
 	  	
 	  	setupPermissions();
@@ -201,7 +190,7 @@ public class DynamicMarket extends JavaPlugin {
     public void setup() {
     	updateSettings();
     	messages = new Messages(this);
-        Settings = new Configuration(new File(getDataFolder() + File.separator + "config.yml"));
+        Settings = new Configuration(new File(getDataFolder(), "config.yml"));
         Settings.load();
         
         debug = false;
@@ -213,7 +202,8 @@ public class DynamicMarket extends JavaPlugin {
         max_per_sale = Settings.getInt("general.transactions.max-items-sell", 64);
 
         DynamicMarket.database_type = Settings.getString("database.type", "sqlite");
-
+        
+        sqlite = "jdbc:sqlite:" + getDataFolder() + File.separator + Settings.getString("database.sqlite.file", "shop.db");
         mysql = Settings.getString("database.mysql.database", mysql);
         mysql_user = Settings.getString("database.mysql.user", mysql_user);
         mysql_pass = Settings.getString("database.mysql.password", mysql_pass);

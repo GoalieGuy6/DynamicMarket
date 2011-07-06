@@ -45,6 +45,8 @@ public class MarketItem extends ItemClump {
     // nosell // canSell = 0
     public static int intScale = 10000; // Scale factor used in integerization of calculations.
     public DatabaseMarket thisDatabase = null; // Database object this item is a member of.
+    
+    public Messages messages = new Messages();
 
     /*	diamond: 10 items -> 10% price change, 1 item -> 1% price change, 0.01 * 10000 = 1000
      * 
@@ -622,33 +624,28 @@ public class MarketItem extends ItemClump {
 
     public String infoStringBuy(int numBundles) {
         if (!isValid())
-            return ("{ERR}Invalid or uninitialized item.");
+            return (messages.getMessage("item.invalid"));
         if (!canBuy)
-            return ("{PRM}" + getName() + "{ERR} is unavailable for purchase.");
+            return (messages.getMessage("item.no-buy").replace("+item+", getName()));
         if (!getCanBuy(1))
-            return ("{PRM}" + getName() + "{ERR} is out of stock: no more can be bought right now.");
+            return (messages.getMessage("error.empty-stock").replace("+item+", getName()));
         if (!getCanBuy(numBundles))
-            return ("{PRM}" + getName() + "{ERR} has only {PRM}"
-                    + formatBundleCount(leftToBuy()) + " {ERR}left for sale.");
+            return (messages.getMessage("error.understocked").replace("+item+", getName()).replace("+amount+", formatBundleCount(leftToBuy())));
         // Display count as [<bundle>(x<numbundles>)]
-        return ("{}Buy: {BKT}[{PRM}" + formatBundleCount(numBundles) + "{BKT}]{} for {PRM}" + DynamicMarket.getEconomy().format(getBuyPrice(numBundles)));
-        // TODO: Abstract currency name from iConomy reference.
+        return (messages.getMessage("item.buy").replace("+amount+", formatBundleCount(numBundles)).replace("+price+", DynamicMarket.getEconomy().format(getBuyPrice(numBundles))).replace("+item+", getName()));
     }
 
     public String infoStringSell(int numBundles) {
         if (!isValid())
-            return ("{ERR}Invalid or uninitialized item.");
+            return (messages.getMessage("item.invalid"));
         if (!canSell)
-            return ("{PRM}" + getName() + "{ERR} is unavailable for purchase.");
+            return (messages.getMessage("item.no-sell").replace("+item+", getName()));
         if (!getCanSell(1))
-            return ("{PRM}" + getName() + "{ERR} is overstocked: no more can be sold right now.");
+            return (messages.getMessage("error.full-stock").replace("+item+", getName()));
         if (!getCanSell(numBundles))
-            return ("{PRM}" + getName() + "{ERR} is overstocked, only {PRM}"
-                    + formatBundleCount(leftToSell()) + " {ERR}can be sold.");
+            return (messages.getMessage("error.overstocked").replace("+item+", getName()).replace("+amount+", formatBundleCount(leftToSell())));
         // Display count as [<bundle>(x<numbundles>)]
-        return ("{}Sell: {BKT}[{PRM}" + formatBundleCount(numBundles)
-                + "{BKT}]{} for {PRM}" + DynamicMarket.getEconomy().format(getSellPrice(numBundles)));
-        // TODO: Abstract currency name from iConomy reference.
+        return (messages.getMessage("item.sell").replace("+amount+", formatBundleCount(numBundles)).replace("+price+", DynamicMarket.getEconomy().format(getSellPrice(numBundles))).replace("+item+", getName()));
     }
 
     public int leftToBuy() {
@@ -686,12 +683,11 @@ public class MarketItem extends ItemClump {
     }
 
     public String infoStringShort() {
-        return ("{BKT}[{}" + itemId + (subType != 0 ? "," + subType : "")
-                + "{BKT}]{} " + getName() + "{BKT}[{}" + count
-                + "{BKT}]{} Buy:{BKT}[{}"
-                + (getCanBuy(1) ? getBuyPrice(1) : "-")
-                + "{BKT}]{} Sell:{BKT}[{}"
-                + (getCanSell(1) ? getSellPrice(1) : "-") + "{BKT}]");
+    	String msg = messages.getMessage("list.item");
+    	String id = itemId + (subType != 0 ? "," + subType : "");
+    	String buy = (getCanBuy(1) ? Double.toString(getBuyPrice(1)) : "-");
+    	String sell = (getCanSell(1) ? Double.toString(getSellPrice(1)) : "-");
+    	return msg.replace("+id+", id).replace("+item+", getName()).replace("+amount+", Integer.toString(count)).replace("+buy+", buy).replace("+sell+", sell);
     }
 
     public ArrayList<String> infoStringFull() {

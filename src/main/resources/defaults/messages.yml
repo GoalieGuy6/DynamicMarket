@@ -1,46 +1,157 @@
+##
+# DynamicMarket V0.5.4 Message Configuration
+##
 general:
-    tag: '<pink>[<gold>Shop<pink>]'
-    balance: '<yellow>Balance: <aqua>+money+'
+    # Tag is displayed before most output from DynamicMarket
+    tag: '<pink>[<yellow>Shop<pink>]'
+    # Displayed after every transaction, shows the user's balance
+    # Variables:
+    #   +money+  The user's balance
+    balance: '<yellow>You have <aqua>+money+ <yellow>left.'
 
 item:
+    # Header is the first line displayed when someone uses /shop [item]
+    # Variables:
+    #   +item+   The item name
+    #   +id+     The item id
     header: '<yellow>Item <aqua>+item+<pink>[<aqua>+id+<pink>] <yellow>info:'
+    # Buy is the line showing the buy price of an item in /shop [item]
+    # Variables:
+    #   +name+   The item name
+    #   +amount+ The amount of items being price-checked
+    #   +price+  The cost of the items
     buy: '<yellow>Buy: <pink>[<aqua>+amount+<pink>] <yellow>for <aqua>+price+'
+    # Sell is the line showing the sell price of an item in /shop [item]
+    # Variables:
+    #   +item+   The item name
+    #   +amount+ The amount of items being price-checked
+    #   +price+  The price of selling the items
     sell: '<yellow>Sell: <pink>[<aqua>+amount+<pink>] <yellow>for <aqua>+price+'
-    no-buy: '<aqua>+item+ <red>is not for sale.'
-    no-sell: '<aqua>+item+ <red>cannot be sold.'
+    # Displayed in /shop [item] when an item cannot be bought
+    # Variables:
+    #   +item+   The item name
+    no-buy: '<aqua>+item+ <rose>is not for sale.'
+    # Displayed in /shop [item] when an item cannot be sold
+    # Variables:
+    #   +item+   The item name
+    no-sell: '<aqua>+item+ <rose>cannot be sold.'
+    # Displayed when an error occurs in finding an item
+    invalid: '<rose>Error: Invalid item.'
 
 transaction:
+    # Displayed when a user makes a purchase
+    # Variables:
+    #   +item+   The item name
+    #   +amount+ The amount of items purchased
+    #   +price+  The amount of money spent
     purchased: '<yellow>Purchased <pink>[<aqua>+amount+<pink>] <aqua>+item+ <yellow>for <aqua>+price+'
+    # Displayed when a user sells items
+    # Variables:
+    #   +item+   The item name
+    #   +amount+ The amount of items sold
+    #   +price+  The amount of money earned
     sold: '<yellow>Sold <pink>[<aqua>+amount+<pink>] <aqua>+item+ <yellow>for <aqua>+price+'
-    balance: '<yellow>You have <aqua>+money+ <yellow>left.'
     
 list:
+    # The header in /shop list
+    # Variables:
+    #   +page+   The current page
+    #   +pages+  The total number of pages
     header: '<yellow>Shop Items: Page <pink>[<aqua>+page+<pink>] <yellow> of <pink>[<aqua>+pages+<pink>]'
-    empty: '<red>The shop is currently empty.'
-    page: '<red>The shop only has +pages+ pages!'
+    # Displayed when the shop is empty.
+    empty: '<rose>The shop is currently empty.'
+    # Displayed when a user tries to list a page past the last one
+    # Variables:
+    #   +page+   The page trying to be accessed
+    #   +pages+  The total number of pages
+    page: '<rose>The shop only has +pages+ pages!'
+    # The format for items displayed in /shop list
+    # Variables:
+    #   +id+     The item id
+    #   +item+   The item name
+    #   +amount+ The item's bundle size
+    #   +buy+    The item's buy price
+    #   +sell+   The item's sell price
+    item: '<pink>[<yellow>+id+<pink>] <yellow>+item+<pink>[<yellow>+amount+<pink>] <yellow>Buy: <pink>[<yellow>+buy+<pink>] <yellow>Sell: <pink>[<yellow>+sell+<pink>]'
 
 error:
-    unknown: '<red>Unknown shop command. Try <white>/shop help<red>.'
-    invalid: '<red>Unrecognized or invalid item or command!'
-    not-in-shop: '<red>That item is not in the shop.'
-    inventory: '<red>You do not have enough inventory space!'
-    cannot-buy: '<red>That item cannot be bought.'
-    cannot-sell: '<red>That item cannot be sold.'
-    understocked: '<red>There are only <aqua>+amount+ <red>of +item+ left.'
-    overstocked: '<red>Only <aqua>+amount+ <red>more of +item+ can be sold.'
-    over-max-buy: '<red>You cannot purchase that many items.'
-    over-max-sell: '<red>You cannot sell that many items.'
-    money: '<red>You do not have enough money.'
-    not-enough: '<red>You do not have enough +item+ to sell!'
-    shop-not-enough: '<red>The shop does not have enough money to buy +amount+ +item+.'
+    # Displayed when a user tries a non-existent command
+    unknown: '<rose>Unknown shop command. Try <white>/shop help<rose>.'
+    
+    # Displayed when a user tries to access an invalid item
+    invalid: '<rose>Unrecognized or invalid item or command!'
+    
+    # Displayed when a user tries to buy an item not in the shop
+    not-in-shop: '<rose>That item is not in the shop.'
+    
+    # Displayed if the users tries to make a purchase but doens't have enough space
+    inventory: '<rose>You do not have enough inventory space!'
+    
+    # Displayed if a user tries to buy an item that cannot be bought
+    # Variables:
+    #   +item+   The item name
+    cannot-buy: '<rose>That item cannot be bought.'
+    
+    # Displayed if a user tries to sell an item that cannot be sold
+    # Variables:
+    #   +item+   The item name
+    cannot-sell: '<rose>That item cannot be sold.'
+    
+    # Displayed if the shop doesn't have enough stock for a purchase
+    # Variables:
+    #   +item+   The item name
+    #   +amount+ The amount of items left in the shop's stock
+    understocked: '<rose>There are only <aqua>+amount+ <rose>of +item+ left.'
+    
+    # Displayed if the shop is completely out of stock
+    # The difference between this and understocked is that understocked is displayed when the
+    # shop still has stock left, but not enough to supply the amount the user tried to purchase
+    # Variables:
+    #   +item+   The item name
+    empty-stock: '<aqua>+item+ <rose>is out of stock!'
+    
+    # Displayed if a user's sale will go over the shop's stock limit
+    # Variables:
+    #   +item+   The item name
+    #   +amount+ The number of items the shop will accept before the stock is full
+    overstocked: '<aqua>+item+ <rose>is overstocked, only <aqua>+amount+ <rose>more of can be sold.'
+    
+    # Displayed if the shop's stock is completely full
+    # The difference between this and overstocked is that overstocked is displayed when the shop is not
+    # completely full, but does not have enough space left to take all the items the user tried to sell
+    # Variables:
+    #   +item+   The item name
+    full-stock: '<aqua>+item+ <rose>is completely stocked, no more can be sold.'
+    
+    # Displayed if a user tries to purchase an amount over the limit in config.yml
+    over-max-buy: '<rose>You cannot purchase that many items.'
+    
+    # Displayed if a user tries to sell an amount over the limit in config.yml
+    over-max-sell: '<rose>You cannot sell that many items.'
+    
+    # Displayed if the user does not have enough money to make a purchase
+    money: '<rose>You do not have enough money.'
+    
+    # Displayed if the user does not have enough items to make a sale
+    # Variables:
+    #   +item+   The item name
+    not-enough: '<rose>You do not have enough +item+ to sell!'
+    
+    # Displayed if the shop account does not have enough money for the user to make a sale
+    # Variables:
+    #   +item+   The item name
+    #   +amount+ The amount the user is trying to sell
+    shop-not-enough: '<rose>The shop does not have enough money to buy +amount+ +item+.'
 
+# These messages are displayed when a user tries to use a command they don't have access to
+# The node for the messages corresponds to the plugin's permission nodes
 no-permission:
-    access: '<red>You do not have permission to access the shop.'
-    buy: '<red>You do not have permission to buy items.'
-    sell: '<red>You do not have permission to sell items.'
-    reload: '<red>You do not have access to that command.'
-    reset: '<red>You do not have access to that command.'
-    db: '<red>You do not have access to that command.'
-    add: '<red>You do not have permisison to add items.'
-    update: '<red>You do not have permission to update items.'
-    remove: '<red>You do not have permission to remove items.'
+    access: '<rose>You do not have permission to access the shop.'
+    buy: '<rose>You do not have permission to buy items.'
+    sell: '<rose>You do not have permission to sell items.'
+    reload: '<rose>You do not have access to that command.'
+    reset: '<rose>You do not have access to that command.'
+    db: '<rose>You do not have access to that command.'
+    add: '<rose>You do not have permisison to add items.'
+    update: '<rose>You do not have permission to update items.'
+    remove: '<rose>You do not have permission to remove items.'

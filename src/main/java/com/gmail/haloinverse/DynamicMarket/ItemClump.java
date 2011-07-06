@@ -10,7 +10,7 @@ public class ItemClump {
     public int itemId; // id of item
     public int subType; 	// Subtype of item (i.e. dye colour); 0 if undamaged single-typed item.
     public int count; // Number of items in this clump.
-
+    
     public ItemClump() {
         // Default constructor with no parameters.
         itemId = -1;
