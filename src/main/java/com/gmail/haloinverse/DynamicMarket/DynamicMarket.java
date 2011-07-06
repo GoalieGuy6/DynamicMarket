@@ -207,9 +207,9 @@ public class DynamicMarket extends JavaPlugin {
 
         items = new Items(getDataFolder().getPath() + File.separator + "items.db", this);
 
-        shop_tag = Settings.getString("shop-tag", shop_tag);
-        max_per_purchase = Settings.getInt("max-items-per-purchase", 64);
-        max_per_sale = Settings.getInt("max-items-per-sale", 64);
+        shop_tag = Settings.getString("general.shop-tag", shop_tag);
+        max_per_purchase = Settings.getInt("general.transactions.max-items-buy", 64);
+        max_per_sale = Settings.getInt("general.transactions.max-items-sell", 64);
 
         DynamicMarket.database_type = Settings.getString("database.type", "sqlite");
 
@@ -246,7 +246,7 @@ public class DynamicMarket extends JavaPlugin {
 
         logTransactions = Settings.getBoolean("general.transactions.log-transactions", false);
         transLogFile = Settings.getString("general.transactions.log-file", transLogFile);
-        transLogAutoFlush = Settings.getBoolean("general.transaction.log-auto-flush", transLogAutoFlush);
+        transLogAutoFlush = Settings.getBoolean("general.transactions.log-auto-flush", transLogAutoFlush);
         
         if (logTransactions) {
 	        if ((transLogFile != null) && (!transLogFile.isEmpty())) {
