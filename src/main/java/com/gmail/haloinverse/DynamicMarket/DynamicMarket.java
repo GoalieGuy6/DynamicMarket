@@ -27,7 +27,7 @@ public class DynamicMarket extends JavaPlugin {
     public static final Logger log = Logger.getLogger("Minecraft");
 
     public static String name; // = "DynamicMarket";
-    public static String version; // = "0.5.2";
+    public static String version; // = "0.5.4";
     
     public DynamicMarketAPI DMAPI = new DynamicMarketAPI(this);
     
@@ -40,6 +40,7 @@ public class DynamicMarket extends JavaPlugin {
     
     public static Configuration Settings;
     public static File directory = null;
+    public Messages messages;
 
     //protected static String currency;// = "Coin";
     protected static boolean econLoaded = false;
@@ -49,7 +50,6 @@ public class DynamicMarket extends JavaPlugin {
 
     //protected static boolean wrapperMode = false;
     protected static boolean opPermissions = false;
-    protected static boolean wrapperPermissions = false;
     protected static LinkedList<JavaPlugin> wrappers = new LinkedList<JavaPlugin>();    
     
     protected static boolean simplePermissions = false;
@@ -200,6 +200,7 @@ public class DynamicMarket extends JavaPlugin {
 
     public void setup() {
     	updateSettings();
+    	messages = new Messages(this);
         Settings = new Configuration(new File(getDataFolder() + File.separator + "config.yml"));
         Settings.load();
         
@@ -207,7 +208,7 @@ public class DynamicMarket extends JavaPlugin {
 
         items = new Items(getDataFolder().getPath() + File.separator + "items.db", this);
 
-        shop_tag = Settings.getString("general.shop-tag", shop_tag);
+        shop_tag = messages.getMessage("general.tag") + " ";
         max_per_purchase = Settings.getInt("general.transactions.max-items-buy", 64);
         max_per_sale = Settings.getInt("general.transactions.max-items-sell", 64);
 
@@ -271,7 +272,7 @@ public class DynamicMarket extends JavaPlugin {
     		return;
     	}
     	
-    	InputStream input = DynamicMarket.class.getResourceAsStream("/config.yml");    	
+    	InputStream input = DynamicMarket.class.getResourceAsStream("/defaults/config.yml");    	
     	FileOutputStream output = null;
     	
     	try {
@@ -335,7 +336,6 @@ public class DynamicMarket extends JavaPlugin {
     	config.setProperty("general.transactions.log-auto-flush", settings.getBoolean("transaction-log-autoflush", transLogAutoFlush));
     	config.setProperty("general.shop-account.free", defaultShopAccountFree);
     	config.setProperty("general.shop-account.name", "");
-    	config.setProperty("general.shop-tag", settings.getString("shop-tag", shop_tag));
     	
     	config.save();
     	
