@@ -36,13 +36,7 @@ public class iListen extends PlayerListener {
 				return true;
 			}
 		}
-		if (DynamicMarket.wrapperPermissions) {
-			if (plugin.permissionWrapper != null) {
-				return plugin.permissionWrapper.permission(sender, permString);
-			}
-			DynamicMarket.log.warning("[" + DynamicMarket.name + "] Wrapper-permissions set, but no permission handler registered!");
-			return false;
-		}
+		
 		// Permissions not overridden.
 		return DynamicMarket.Permissions.has((Player) sender, DynamicMarket.name.toLowerCase() + "." + permString);
 	}
