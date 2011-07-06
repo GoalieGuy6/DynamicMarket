@@ -1047,7 +1047,7 @@ public class iListen extends PlayerListener {
 			}
 
 			// If this point is reached, no subcommand was matched...
-			message.send("{ERR}Unknown or mangled shop command. Try {CMD}/shop help{ERR}.");
+			message.send(plugin.messages.getMessage("error.unknown"));
 			return true;
 		}
 
