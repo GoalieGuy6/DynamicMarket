@@ -1,0 +1,46 @@
+general:
+    tag: '<pink>[<gold>Shop<pink>]'
+    balance: '<yellow>Balance: <aqua>+money+'
+
+item:
+    header: '<yellow>Item <aqua>+item+<pink>[<aqua>+id+<pink>] <yellow>info:'
+    buy: '<yellow>Buy: <pink>[<aqua>+amount+<pink>] <yellow>for <aqua>+price+'
+    sell: '<yellow>Sell: <pink>[<aqua>+amount+<pink>] <yellow>for <aqua>+price+'
+    no-buy: '<aqua>+item+ <red>is not for sale.'
+    no-sell: '<aqua>+item+ <red>cannot be sold.'
+
+transaction:
+    purchased: '<yellow>Purchased <pink>[<aqua>+amount+<pink>] <aqua>+item+ <yellow>for <aqua>+price+'
+    sold: '<yellow>Sold <pink>[<aqua>+amount+<pink>] <aqua>+item+ <yellow>for <aqua>+price+'
+    balance: '<yellow>You have <aqua>+money+ <yellow>left.'
+    
+list:
+    header: '<yellow>Shop Items: Page <pink>[<aqua>+page+<pink>] <yellow> of <pink>[<aqua>+pages+<pink>]'
+    empty: '<red>The shop is currently empty.'
+    page: '<red>The shop only has +pages+ pages!'
+
+error:
+    unknown: '<red>Unknown shop command. Try <white>/shop help<red>.'
+    invalid: '<red>Unrecognized or invalid item or command!'
+    not-in-shop: '<red>That item is not in the shop.'
+    inventory: '<red>You do not have enough inventory space!'
+    cannot-buy: '<red>That item cannot be bought.'
+    cannot-sell: '<red>That item cannot be sold.'
+    understocked: '<red>There are only <aqua>+amount+ <red>of +item+ left.'
+    overstocked: '<red>Only <aqua>+amount+ <red>more of +item+ can be sold.'
+    over-max-buy: '<red>You cannot purchase that many items.'
+    over-max-sell: '<red>You cannot sell that many items.'
+    money: '<red>You do not have enough money.'
+    not-enough: '<red>You do not have enough +item+ to sell!'
+    shop-not-enough: '<red>The shop does not have enough money to buy +amount+ +item+.'
+
+no-permission:
+    access: '<red>You do not have permission to access the shop.'
+    buy: '<red>You do not have permission to buy items.'
+    sell: '<red>You do not have permission to sell items.'
+    reload: '<red>You do not have access to that command.'
+    reset: '<red>You do not have access to that command.'
+    db: '<red>You do not have access to that command.'
+    add: '<red>You do not have permisison to add items.'
+    update: '<red>You do not have permission to update items.'
+    remove: '<red>You do not have permission to remove items.'
