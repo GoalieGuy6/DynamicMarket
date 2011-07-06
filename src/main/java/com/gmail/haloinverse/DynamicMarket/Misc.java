@@ -9,8 +9,6 @@ public class Misc
 {
     public static String headerify(String innerText)
     {
-        // TODO: Catch cases where a colour code ends up at the end of the line.
-        // This is capable of crashing the client!
         int extraLength = innerText.length()
                 - (stripCodes(Messaging.stripHighlights(innerText))).length();
         String newString = "--"
