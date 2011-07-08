@@ -52,6 +52,7 @@ public class DynamicMarket extends JavaPlugin {
     public String shop_tag = "{BKT}[{}Shop{BKT}]{} ";
     protected int max_per_purchase = 64;
     protected int max_per_sale = 64;
+    protected boolean notHoldingItem = false;
     public String defaultShopAccount = "";
     public boolean defaultShopAccountFree = true;
     protected static String database_type = "sqlite";
@@ -200,6 +201,7 @@ public class DynamicMarket extends JavaPlugin {
         shop_tag = messages.getMessage("general.tag") + " ";
         max_per_purchase = Settings.getInt("general.transactions.max-items-buy", 64);
         max_per_sale = Settings.getInt("general.transactions.max-items-sell", 64);
+        notHoldingItem = Settings.getBoolean("general.empty-hand", notHoldingItem);
 
         DynamicMarket.database_type = Settings.getString("database.type", "sqlite");
         

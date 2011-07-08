@@ -514,6 +514,11 @@ public class iListen extends PlayerListener {
 			message.send(plugin.shop_tag + plugin.messages.getMessage("error.cannot-buy").replace("+item+", data.getName()));
 			return true;
 		}
+		
+		if (player.getItemInHand().getAmount() > 0 && plugin.notHoldingItem) {
+			message.send(plugin.shop_tag + "You may not make a purchase while holding an item!");
+			return true;
+		}
 
 		if (!data.canBuy) {
 			String msg = plugin.messages.getMessage("item.no-buy").replace("+item+", data.getName());
