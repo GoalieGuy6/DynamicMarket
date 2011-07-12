@@ -8,8 +8,6 @@ import com.nijikokun.registerDM.payment.Methods;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.util.LinkedList;
-import java.util.Timer;
 import java.util.logging.Logger;
 
 import org.bukkit.command.Command;
@@ -38,7 +36,7 @@ public class DynamicMarket extends JavaPlugin {
     public static Methods economyMethods = null;
     public static PermissionHandler Permissions = null;
     
-    public static Configuration Settings;
+    public static Config Settings;
     public Messages messages;
 
     protected static boolean econLoaded = false;
@@ -191,7 +189,7 @@ public class DynamicMarket extends JavaPlugin {
     public void setup() {
     	updateSettings();
     	messages = new Messages(this);
-        Settings = new Configuration(new File(getDataFolder(), "config.yml"));
+        Settings = new Config(this);
         Settings.load();
         
         debug = false;
@@ -201,7 +199,7 @@ public class DynamicMarket extends JavaPlugin {
         shop_tag = messages.getMessage("general.tag") + " ";
         max_per_purchase = Settings.getInt("general.transactions.max-items-buy", 64);
         max_per_sale = Settings.getInt("general.transactions.max-items-sell", 64);
-        notHoldingItem = Settings.getBoolean("general.empty-hand", notHoldingItem);
+        notHoldingItem = Settings.getBoolean("general.empty-hand-required", notHoldingItem);
 
         DynamicMarket.database_type = Settings.getString("database.type", "sqlite");
         

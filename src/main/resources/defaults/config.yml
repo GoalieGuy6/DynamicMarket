@@ -1,7 +1,9 @@
 ##
-# DynamicMarket V0.5.2
+# DynamicMarket V0.6.1
 ##
 general:
+    # Whether or not a player can make a purchase while holding an item
+    empty-hand-required: false
     # Shop tag is what is displayed before most shop output  Default is [Shop].  Improved coloring system coming soon
     shop-tag: '{BKT}[{}Shop{BKT}]{} '
     transactions:
@@ -15,6 +17,14 @@ general:
         max-items-buy: 64
         # Maximum number of items (not bundles) a user is allowed to sell in one transaction
         max-items-sell: 64
+    csv:
+        # The file to export/import shop data to/from.
+        file: shopexport.csv
+    shop-account:
+        # Whether or not sales that would put the shop account below 0 money can be made
+        free: true
+        # The name of the shop's economy account (blank = no shop account)
+        name: ''
 database:
     # Database type, either sqlite or mysql
     type: sqlite

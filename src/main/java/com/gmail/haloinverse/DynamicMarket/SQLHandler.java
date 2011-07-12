@@ -151,14 +151,13 @@ public class SQLHandler {
             
             try {
                 connDB.logSevereException("PreparedStatement status: " + (ps.isClosed()?"closed":"open"));
-            } catch ( SQLException ex2) {
+            } catch ( Exception ex2) {
                 connDB.logSevereException("Error checking PreparedStatement status: " + ex2);
                 ex2.printStackTrace();
             }
-
             try {
                 connDB.logSevereException("Connection status: " + (ps.getConnection().isClosed()?"closed":"open"));
-            } catch ( SQLException ex2) {
+            } catch ( Exception ex2) {
                 connDB.logSevereException("Error checking connection status: " + ex2);
                 ex2.printStackTrace();
             }

@@ -25,7 +25,7 @@ public class Messages {
 	}
 	
 	private void load() {
-		File messageFile = new File(plugin.getDataFolder(), "messages.yml");
+		File messageFile = new File("plugins/DynamicMarket", "messages.yml");
 		if (!messageFile.exists()) {
 			extractFile();
 		}
@@ -35,7 +35,7 @@ public class Messages {
 	}
 
 	private void extractFile() {
-		File outputFile = new File(plugin.getDataFolder(), "messages.yml");
+		File outputFile = new File("plugins/DynamicMarket", "messages.yml");
 		
 		InputStream input = DynamicMarket.class.getResourceAsStream("/defaults/messages.yml");    	
     	FileOutputStream output = null;

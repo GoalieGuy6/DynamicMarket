@@ -109,16 +109,27 @@ public abstract class DatabaseCore {
         Connection newConn;
         
         if (this.databaseType.equals(Type.SQLITE)) {
-            Class.forName("org.sqlite.JDBC");
-            newConn = DriverManager.getConnection(DynamicMarket.sqlite);
-            newConn.setAutoCommit(true);
+        	try {
+        		Class.forName("org.sqlite.JDBC").newInstance();
+        		newConn = DriverManager.getConnection(DynamicMarket.sqlite);
+        		newConn.setAutoCommit(true);
+        	} catch (Exception ex) {
+        		logSevereException(ex.getMessage());
+        		return null;
+        	}
             DatabaseCore.conn = newConn;
             return DatabaseCore.conn;
         }
 
-        Class.forName("com.mysql.jdbc.Driver");
-        newConn = DriverManager.getConnection(DynamicMarket.mysql, DynamicMarket.mysql_user, DynamicMarket.mysql_pass);
-        newConn.setAutoCommit(false);
+        try {
+        	Class.forName("com.mysql.jdbc.Driver").newInstance();
+        	newConn = DriverManager.getConnection(DynamicMarket.mysql, DynamicMarket.mysql_user, DynamicMarket.mysql_pass);
+        	newConn.setAutoCommit(false);
+        } catch (Exception ex) {
+        	logSevereException(ex.getMessage());
+        	return null;
+        }
+        
         DatabaseCore.conn = newConn;
         return DatabaseCore.conn;
     }

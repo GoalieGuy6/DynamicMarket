@@ -516,7 +516,7 @@ public class iListen extends PlayerListener {
 		}
 		
 		if (player.getItemInHand().getAmount() > 0 && plugin.notHoldingItem) {
-			message.send(plugin.shop_tag + "You may not make a purchase while holding an item!");
+			message.send(plugin.shop_tag + "&cYou may not make a purchase while holding an item!");
 			return true;
 		}
 
