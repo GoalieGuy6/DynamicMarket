@@ -5,9 +5,7 @@ import com.nijikokun.registerDM.payment.Methods;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.event.server.ServerListener;
-import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.LinkedList;
 import java.util.logging.Logger;
 
 /**

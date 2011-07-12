@@ -9,8 +9,8 @@ public class Config extends Configuration {
 	
 	private Map<String, Object> configValues;
 	
-	public Config(DynamicMarket instance) {
-		super(new File(instance.getDataFolder(), "config.yml"));
+	public Config(DynamicMarket instance, File file) {
+		super(file);
 	}
 	
 	@Override
