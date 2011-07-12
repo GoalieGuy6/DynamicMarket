@@ -515,7 +515,7 @@ public class iListen extends PlayerListener {
 			return true;
 		}
 		
-		if (player.getItemInHand().getAmount() > 0 && plugin.notHoldingItem) {
+		if (player.getItemInHand().getAmount() > 0 && plugin.notHoldingItemBuy) {
 			message.send(plugin.shop_tag + "&cYou may not make a purchase while holding an item!");
 			return true;
 		}
@@ -595,6 +595,11 @@ public class iListen extends PlayerListener {
 		if (data.canSell == false) {
 			String msg = plugin.messages.getMessage("error.cannot-sell").replace("+item", data.getName());
 			message.send(plugin.shop_tag + msg);
+			return true;
+		}
+		
+		if (player.getItemInHand().getAmount() > 0 && plugin.notHoldingItemSell) {
+			message.send(plugin.shop_tag + "&cYou may not make a purchase while holding an item!");
 			return true;
 		}
 
