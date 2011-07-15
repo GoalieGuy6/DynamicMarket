@@ -110,6 +110,9 @@ public class DynamicMarket extends JavaPlugin {
         setup();
         
         log.info("[" + name + "] Version " + version + " enabled.");
+        if (version.endsWith("SNAPSHOT")) {
+        	log.info("[" + name + "] You are currently running a test build, stability is not guaranteed.");
+        }
     }
 
     public static Server getTheServer() {
@@ -195,7 +198,6 @@ public class DynamicMarket extends JavaPlugin {
         Groups = new Config(this, new File(getDataFolder(), "groups.yml"));
         setupGroups();
         Groups.load();
-        
         
         debug = false;
 

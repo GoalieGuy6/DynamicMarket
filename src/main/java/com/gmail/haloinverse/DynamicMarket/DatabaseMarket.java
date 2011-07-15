@@ -559,7 +559,7 @@ public class DatabaseMarket extends DatabaseCore {
             returnedName = "DEFAULT";
 
         if (returnedName == null)
-            return "UNKNOWN";
+            returnedName = "UNKNOWN";
 
         return returnedName;
 

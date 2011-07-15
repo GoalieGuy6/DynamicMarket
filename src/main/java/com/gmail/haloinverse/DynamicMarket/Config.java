@@ -20,8 +20,17 @@ public class Config extends Configuration {
 	}
 	
 	public void addProperty(String node, Object value) {
-		if (!configValues.containsKey(node)) {
-			this.setProperty(node, value);
+		boolean exists = false;
+		
+		for (String nodes : configValues.keySet()) {
+			if (nodes.startsWith(node + ".") || nodes.equals(node)) {
+				exists = true;
+				break;
+			}
+		}
+		
+		if (!exists) {
+			setProperty(node, value);
 		}
 		
 		save();

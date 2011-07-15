@@ -1,6 +1,8 @@
 package com.gmail.haloinverse.DynamicMarket;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Map;
 //import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -8,6 +10,7 @@ import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.util.config.ConfigurationNode;
 
 import com.nijikokun.registerDM.payment.Method.MethodAccount;
 
@@ -538,6 +541,12 @@ public class iListen extends PlayerListener {
 		}
 
 		transValue = data.getBuyPrice(requested.count);
+		
+		int discount = getDiscount(player);
+		
+		if (discount > 0) {
+			transValue *= (1 - (((double) discount) / 100));
+		}
 
 		if (!account.hasEnough(transValue)) {
 			message.send(plugin.shop_tag + plugin.messages.getMessage("error.money"));
@@ -599,7 +608,7 @@ public class iListen extends PlayerListener {
 		}
 		
 		if (player.getItemInHand().getAmount() > 0 && plugin.notHoldingItemSell) {
-			message.send(plugin.shop_tag + "&cYou may not make a purchase while holding an item!");
+			message.send(plugin.shop_tag + "&cYou may not make a sale while holding an item!");
 			return true;
 		}
 
@@ -621,6 +630,12 @@ public class iListen extends PlayerListener {
 		}
 
 		transValue = data.getSellPrice(requested.count);
+		
+		int discount = getDiscount(player);
+		
+		if (discount > 0) {
+			transValue *= (1 - (((double) discount) / 100));
+		}
 
 		if (!freeAccount) {
 			if (get_balance(accountName) < transValue) {
@@ -647,6 +662,29 @@ public class iListen extends PlayerListener {
 		}
 
 		return true;
+	}
+	
+	private int getDiscount(Player player) {
+		Map<String, ConfigurationNode> groups = DynamicMarket.Groups.getNodes("groups");
+		int discount = 0;
+		int tmp;
+		
+		for (ConfigurationNode group : groups.values()) {
+			tmp = group.getInt("discount", 0);
+			String perm = group.getString("node", "default");
+			
+			if (perm.equalsIgnoreCase("default")) {
+				continue;
+			}
+			
+			if (hasPermission(player, "groups." + perm)) {
+				if (tmp > discount) {
+					discount = tmp;
+				}
+			}
+		}
+		
+		return discount;
 	}
 
 	private boolean shopAddItem(String itemString, Messaging message, String shopLabel) {
@@ -972,7 +1010,7 @@ public class iListen extends PlayerListener {
 					message.send(plugin.messages.getMessage("no-permission.db"));
 					return true;
 				}
-				if (plugin.db.inhaleFromCSV(DynamicMarket.csvFilePath + shopLabel + DynamicMarket.csvFileName, shopLabel)) {
+				if (plugin.db.inhaleFromCSV(DynamicMarket.csvFilePath + File.separator + shopLabel + DynamicMarket.csvFileName, shopLabel)) {
 					message.send("{} Database import from {PRM}" + shopLabel + DynamicMarket.csvFileName + "{} successful.");
 					return true;
 				} else {
