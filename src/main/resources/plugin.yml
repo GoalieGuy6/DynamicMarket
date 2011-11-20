@@ -1,24 +1,11 @@
 name: DynamicMarket
-main: com.gmail.haloinverse.DynamicMarket.DynamicMarket
-version: 0.7.0-SNAPSHOT
-authors:
-    - GoalieGuy6
-    - Magik
-    - HaloInverse
-description: >
-             A shop plugin building towards an interesting and flexible market system.
+main: com.goalieguy6.dynamicmarket.DynamicMarket
+version: ${project.version}
+author: GoalieGuy6
+description: A shop plugin with live updating prices based on supply and demand.
 commands:
-    shop:
-       description: Accesses the shop command system.
-       usage: |
-              /<command>
-              /<command> help <topic/command>
-              /<command> <itemid>
-              /<command> <subcommand> <args>
-    dshop:
-       description: Accesses the shop command system.
-       usage: |
-              /<command>
-              /<command> help <topic/command>
-              /<command> <itemid>
-              /<command> <subcommand> <args>
+    dynamicmarket:
+        description: Access the shop
+        aliases: [dm, shop]
+        usage: |
+               /<command>
