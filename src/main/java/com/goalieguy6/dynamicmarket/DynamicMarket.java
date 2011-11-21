@@ -25,6 +25,8 @@ public class DynamicMarket extends JavaPlugin {
 	private CommandHandler commands;
 
 	public void onDisable() {
+		settings.save();
+		
 		Logger.info("Version " + this.version + " disabled.");
 	}
 
@@ -43,6 +45,11 @@ public class DynamicMarket extends JavaPlugin {
 		setupCommands();
 		
 		Logger.info("Version " + this.version + " enabled.");
+		
+		if (this.version.endsWith("SNAPSHOT")) {
+			Logger.info("You are currently running a development build!");
+			Logger.info("Some bugs are expected, please report any issues on the plugin page.");
+		}
 	}
 	
 	private void setupCommands() {
@@ -74,7 +81,7 @@ public class DynamicMarket extends JavaPlugin {
 			url += "mysql://" + Settings.Config.DatabaseHost + ":" + Settings.Config.DatabasePort + "/" + Settings.Config.DatabaseName;
 		} else {
 			driver = "org.sqlite.JDBC";
-			driver += "sqlite:plugins/" + this.name + "/" + Settings.Config.DatabaseFile;
+			url += "sqlite:plugins/" + this.name + "/" + Settings.Config.DatabaseFile;
 		}
 		
 		database.initializeDatabase(
@@ -99,7 +106,7 @@ public class DynamicMarket extends JavaPlugin {
 			return commands.getHandler("list").process(cSender, args);
 		}
 		
-		return false;
+		return true;
 	}
 	
 	@Override

@@ -15,7 +15,15 @@ public class Default extends Handler {
 	public boolean process(CommandSender cSender, String[] args) {
 		super.init(cSender);
 		
-		return false;
+		displayHelp();
+		
+		return true;
+	}
+	
+	private void displayHelp() {
+		sendHeader();
+		
+		
 	}
 
 }

@@ -5,6 +5,7 @@ import org.bukkit.craftbukkit.command.ColouredConsoleSender;
 import org.bukkit.entity.Player;
 
 import com.goalieguy6.dynamicmarket.DynamicMarket;
+import com.goalieguy6.dynamicmarket.Settings;
 
 public abstract class Handler {
 
@@ -29,11 +30,11 @@ public abstract class Handler {
 		if (!console) player = (Player) cSender;
 	}
 		
-	protected boolean permission(String permission) {
+	protected final boolean permission(String permission) {
 		return (console) ? true : player.hasPermission(permission);
 	}
 	
-	protected void send(String message) {
+	protected final void send(String message) {
 		message = Message.parseColor(message);
 		
 		if (console) {
@@ -43,10 +44,14 @@ public abstract class Handler {
 		}
 	}
 	
-	protected void log(String message) {
+	protected final void log(String message) {
 		message = Message.parseColor(message);
 		
 		consoleSender.sendMessage(message);
+	}
+	
+	protected final void sendHeader() {
+		send("&c----- &6DynamicMarket V" + plugin.version + "&f(&e" + Settings.Config.Codename + "&f) &c-----");
 	}
 	
 }
