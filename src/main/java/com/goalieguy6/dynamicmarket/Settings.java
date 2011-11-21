@@ -26,15 +26,6 @@ public class Settings {
 			}
 		}
 		
-		for (Config option : Config.values()) {
-			if (option.getPath().isEmpty()) continue;
-			
-			config.addDefault(option.getPath(), option.getValue());
-			
-			if (!config.isSet(option.getPath())) {
-				config.set(option.getPath(), option.getValue());
-			}
-		}
 	}
 	
 	public void load() {
@@ -50,10 +41,14 @@ public class Settings {
 		
 		for (Config option : Config.values()) {
 			if (option.getPath().isEmpty()) continue;
-
-			if (config.isSet(option.getPath())) {
+			
+			if (!config.isSet(option.getPath())) {
+				config.set(option.getPath(), option.getValue());
+			} else {
 				option.setValue(config.get(option.getPath()));
 			}
+			
+			config.addDefault(option.getPath(), option.getValue());
 		}
 	}
 	
@@ -74,7 +69,7 @@ public class Settings {
 	}
 	
 	public static enum Config {
-		Codename("", ""),
+		Codename("", "Cygnus"),
 		
 		ManagerEnabled("general.manager.enabled", false),
 		ManagerName("general.manager.account", ""),
